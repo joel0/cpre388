@@ -13,21 +13,7 @@ import android.widget.TextView;
  *
  */
 public class MainActivity extends Activity {
-
-    /**
-     * A string builder to represent the first number entered in the series of entries
-     */
-    private StringBuilder expression1;
-
-    /**
-     * A string builder to represent the second number entered in the series of entries
-     */
-    private StringBuilder expression2;
-
-    /**
-     * A string to represent the last operator performed
-     */
-    private String oldOperator;
+    private Calculator calculator = new Calculator(10);
 
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -61,9 +47,13 @@ public class MainActivity extends Activity {
         final TextView main = (TextView) findViewById(R.id.CalculatorText);
 
         // Main Strings to represent the expressions
-        expression1 = new StringBuilder();
-        expression2 = new StringBuilder();
-        main.setText(expression1.append("0.0"));
+        main.setText(calculator.toString());
+        calculator.observers.add(new Calculator.CalculatorObserver() {
+            @Override
+            public void displayUpdate(String display) {
+                main.setText(calculator.toString());
+            }
+        });
 
 		/*
 		 * Set up all key listener events
@@ -72,7 +62,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("0");
             }
 
         });
@@ -81,7 +71,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("1");
             }
 
         });
@@ -90,7 +80,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("2");
             }
 
         });
@@ -99,7 +89,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("3");
             }
 
         });
@@ -108,7 +98,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("4");
             }
 
         });
@@ -117,7 +107,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("5");
             }
 
         });
@@ -126,7 +116,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("6");
             }
 
         });
@@ -135,7 +125,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("7");
             }
 
         });
@@ -144,7 +134,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("8");
             }
 
         });
@@ -153,7 +143,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doNumber("9");
             }
 
         });
@@ -162,7 +152,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doOperator("*");
             }
 
         });
@@ -171,7 +161,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.clear();
             }
 
         });
@@ -180,7 +170,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doEquals();
             }
 
         });
@@ -189,7 +179,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doDecimal();
             }
 
         });
@@ -198,7 +188,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doOperator("/");
             }
 
         });
@@ -207,7 +197,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doOperator("+");
             }
 
         });
@@ -216,21 +206,10 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                //TODO
+                calculator.doOperator("-");
             }
 
         });
-    }
-
-    /**
-     * This method will evaluate an operation using expression1 and expression 2
-     *
-     * @param buttonPressed or operation to be performed
-     * @return the result of the operation
-     */
-    public String evaluate(String buttonPressed) {
-        //TODO
-        return null;
     }
 
 }
