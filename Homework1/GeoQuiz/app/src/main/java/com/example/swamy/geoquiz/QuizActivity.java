@@ -1,10 +1,12 @@
 package com.example.swamy.geoquiz;
 
 import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,18 +21,14 @@ public class QuizActivity extends AppCompatActivity {
     //android naming convention for member instance variables
     //demo import android.widget.Button;, try Alt+Enter
 
-    private Button mYesButton;
-    private Button mNoButton;
     private TextView mTextDisplay;
     private Button mNextButton;
+    private LinearLayout mAnswerButtonLayout;
+    private Snackbar mTryAgainSnackbar;
 
     private int qIndex = 0;
-    private int MaxQ = 2;
-
-    private String questList [ ] = {"Capital of USA is Washington DC",
-            "Capital of India is New Delhi"};
-    private String ansList [ ] = {"Yes",
-            "Yes"};
+    private QuizQuestion[] questions = QuizQuestion.getSampleQuizSet();
+    private int incorrectCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,59 +36,104 @@ public class QuizActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_quiz);
 
-        mYesButton = (Button) findViewById(R.id.button);
-        mNoButton = (Button) findViewById(R.id.button2);
+        mTryAgainSnackbar = Snackbar.make(this.findViewById(R.id.mainLayout),
+                "Incorrect", Snackbar.LENGTH_INDEFINITE);
+        mAnswerButtonLayout = (LinearLayout) findViewById(R.id.answersBox);
+        mNextButton = (Button) findViewById(R.id.button3);
 
         mTextDisplay = (TextView) findViewById(R.id.mytext);
-        mTextDisplay.setText(questList[qIndex]);
         mTextDisplay.setTextColor(Color.BLUE);
+        showQuestion();
 
-        mYesButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if("Yes".equals(ansList[qIndex])) {
-                    Toast.makeText(QuizActivity.this,"You are correct !", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(QuizActivity.this,"Incorrect !", Toast.LENGTH_SHORT).show();
-                }
-
-                mYesButton.setVisibility(View.INVISIBLE);
-                mNoButton.setVisibility(View.INVISIBLE);
-            }
-
-        });
-
-        mNoButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if("No".equals(ansList[qIndex])) {
-                    Toast.makeText(QuizActivity.this,"You are correct !", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(QuizActivity.this,"Incorrect !", Toast.LENGTH_SHORT).show();
-                }
-                mYesButton.setVisibility(View.INVISIBLE);
-                mNoButton.setVisibility(View.INVISIBLE);
-            }
-
-        });
-
-        mNextButton = (Button) findViewById(R.id.button3);
         mNextButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                qIndex = (qIndex + 1)%MaxQ;
-                mTextDisplay.setText(questList[qIndex]);
-                mYesButton.setVisibility(View.VISIBLE);
-                mNoButton.setVisibility(View.VISIBLE);
+                nextQuestion();
             }
 
         });
+    }
+
+    private void nextQuestion() {
+        qIndex = (qIndex + 1) % questions.length;
+        showQuestion();
+    }
+
+    private void showQuestion() {
+        incorrectCount = 0;
+        mTryAgainSnackbar.dismiss();
+        mAnswerButtonLayout.removeAllViews();
+
+        mTextDisplay.setText(questions[qIndex].getQuestion());
+        for (int i = 0; i < questions[qIndex].getAnswers().length; i++) {
+            String answer = questions[qIndex].getAnswers()[i];
+            Button newButton = new Button(this);
+            AnswerOnClick newHandler = new AnswerOnClick(i);
+            newButton.setText(answer);
+            newButton.setOnClickListener(newHandler);
+            mAnswerButtonLayout.addView(newButton);
+        }
+        mAnswerButtonLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showTryAgain() {
+        mAnswerButtonLayout.setVisibility(View.INVISIBLE);
+        mTryAgainSnackbar.setText("Incorrect");
+        mTryAgainSnackbar.setAction("Try again", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAnswerButtonLayout.setVisibility(View.VISIBLE);
+                mTryAgainSnackbar.dismiss();
+            }
+        });
+        mTryAgainSnackbar.show();
+    }
+
+    private void showFailure() {
+        mAnswerButtonLayout.setVisibility(View.INVISIBLE);
+        mTryAgainSnackbar.setAction("Next", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextQuestion();
+            }
+        });
+        mTryAgainSnackbar.setText("Incorrect. It is " + questions[qIndex].getCorrectAnswer());
+        mTryAgainSnackbar.show();
+    }
+
+    private void userChooseAnswer(int index) {
+        if (index == questions[qIndex].getCorrectAnswerIndex()) {
+            correctAnswerChosen();
+        } else {
+            wrongAnswerChosen();
+        }
+    }
+
+    private void correctAnswerChosen() {
+        Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
+        mAnswerButtonLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void wrongAnswerChosen() {
+        incorrectCount++;
+        if (incorrectCount < 2) {
+            showTryAgain();
+        } else {
+            showFailure();
+        }
+    }
+
+    private class AnswerOnClick implements View.OnClickListener {
+        private int answerIndex;
+
+        AnswerOnClick(int answerIndex) {
+            this.answerIndex = answerIndex;
+        }
+
+        @Override
+        public void onClick(View view) {
+            userChooseAnswer(answerIndex);
+        }
     }
 }
