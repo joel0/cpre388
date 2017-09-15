@@ -21,15 +21,12 @@ public class StopWatchActivity extends Activity {
      */
     private final int REFRESH_RATE = 100;
 
-    /**
-     * A variable to keep track of the seconds
-     */
+    private WatchModel watch = new WatchModel();
     
-	
-	
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreate(android.os.Bundle)
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,16 +35,13 @@ public class StopWatchActivity extends Activity {
 
 
 
-    // TODO: Create a Stopwatch!
     /**
      * This method will start the current stopwatch clock
      *
      * @param view the current view
      */
-
     public void startClick(View view){
-
-        //TODO
+        watch.start();
     }
     /**
      * This method will reset the current stopwatch clock
@@ -55,9 +49,7 @@ public class StopWatchActivity extends Activity {
      * @param view the current view
      */
     public void resetClick(View view){
-
-        //TODO
-
+        watch.stop();
     }
 
     /**
@@ -66,9 +58,7 @@ public class StopWatchActivity extends Activity {
      * @param view the current view
      */
     public void stopClick(View view){
-
-        //TODO
-
+        watch.stop();
     }
 
     /**

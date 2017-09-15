@@ -1,6 +1,7 @@
 package com.example.stopwatch;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by jmay on 2017-09-15.
@@ -29,6 +30,26 @@ public class WatchModel {
             default: // state "stopped"
                 return 0;
         }
+    }
+
+    public int getMs() {
+        return (int) (getCurrentDuration() % 1000);
+    }
+
+    public int getSec() {
+        return (int) ((getCurrentDuration() / 1000) % 60);
+    }
+
+    public int getMin() {
+        return (int) ((getCurrentDuration() / 1000 / 60) % 60);
+    }
+
+    public long getHr() {
+        return getCurrentDuration() / 1000 / 60 / 60;
+    }
+
+    public String toString() {
+        return String.format(Locale.getDefault(), "%2d:%2d:%2d.%4d", getHr(), getMin(), getSec(), getMs());
     }
 
     public stateEnum getCurrentState() {
