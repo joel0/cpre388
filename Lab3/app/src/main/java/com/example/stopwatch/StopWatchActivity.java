@@ -3,6 +3,7 @@ package com.example.stopwatch;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +28,8 @@ public class StopWatchActivity extends Activity {
     private Button mButtonStart;
     private Button mButtonStop;
     private Button mButtonReset;
-    
+    private Handler mHandler;
+
     
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -44,6 +46,7 @@ public class StopWatchActivity extends Activity {
         mButtonReset = (Button) findViewById(R.id.buttonReset);
         observer o = new observer();
         watch.addObserver(o);
+        mHandler = new Handler();
     }
 
 
@@ -107,13 +110,16 @@ public class StopWatchActivity extends Activity {
         public void stateChange(WatchModel.stateEnum newState) {
             switch (newState) {
                 case running:
+                    mHandler.postDelayed(startTimer, REFRESH_RATE);
                     showStopButton();
                     break;
                 case paused:
                     hideStopButton();
+                    mHandler.removeCallbacksAndMessages(null);
                     break;
                 case stopped:
                     hideStopButton();
+                    mHandler.removeCallbacksAndMessages(null);
                     break;
             }
             updateTimer();
@@ -125,9 +131,8 @@ public class StopWatchActivity extends Activity {
      */
     private Runnable startTimer = new Runnable() {
         public void run() {
-
-            //TODO
-
+            updateTimer();
+            mHandler.postDelayed(this, REFRESH_RATE);
         }
     };
 

@@ -49,11 +49,11 @@ public class WatchModel {
     }
 
     public String toString() {
-        return String.format(Locale.getDefault(), "%2d:%2d:%2d", getHr(), getMin(), getSec());
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", getHr(), getMin(), getSec());
     }
 
     public String toStringMs() {
-        return String.format(Locale.getDefault(), ".%4d", getMs());
+        return String.format(Locale.getDefault(), ".%01d", getMs() / 100);
     }
 
     public stateEnum getCurrentState() {
@@ -66,7 +66,9 @@ public class WatchModel {
         switch (currentState) {
             case stopped:
                 startTime = System.currentTimeMillis();
-                // Fall into "paused" case.
+                currentState = stateEnum.running;
+                notifyObservers();
+                break;
             case paused:
                 startTime = System.currentTimeMillis() - pauseDuration;
                 currentState = stateEnum.running;
