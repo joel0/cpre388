@@ -22,6 +22,10 @@ public class StopWatchActivity extends Activity {
     private final int REFRESH_RATE = 100;
 
     private WatchModel watch = new WatchModel();
+    private TextView mTimerText;
+    private Button mButtonStart;
+    private Button mButtonStop;
+    private Button mButtonReset;
     
     
     /* (non-Javadoc)
@@ -31,6 +35,13 @@ public class StopWatchActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stopwatch);
+
+        mTimerText = (TextView) findViewById(R.id.timerText);
+        mButtonStart = (Button) findViewById(R.id.buttonStart);
+        mButtonStop = (Button) findViewById(R.id.buttonStop);
+        mButtonReset = (Button) findViewById(R.id.buttonReset);
+        observer o = new observer();
+        watch.addObserver(o);
     }
 
 
@@ -66,9 +77,9 @@ public class StopWatchActivity extends Activity {
      * start and reset button and making the stop button visible.
      */
     private void showStopButton(){
-
-        //TODO
-
+        mButtonStop.setVisibility(View.VISIBLE);
+        mButtonReset.setVisibility(View.GONE);
+        mButtonStart.setVisibility(View.GONE);
     }
 
     /**
@@ -76,9 +87,9 @@ public class StopWatchActivity extends Activity {
      * stop button and making the start and reset buttons visible.
      */
     private void hideStopButton(){
-
-        //TODO
-
+        mButtonStop.setVisibility(View.GONE);
+        mButtonReset.setVisibility(View.VISIBLE);
+        mButtonStart.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -97,6 +108,23 @@ public class StopWatchActivity extends Activity {
         //Setting the timer text to the elapsed time
         //TODO
 
+    }
+
+    private class observer implements WatchModel.WatchObserver {
+        @Override
+        public void stateChange(WatchModel.stateEnum newState) {
+            switch (newState) {
+                case running:
+                    showStopButton();
+                    break;
+                case paused:
+                    hideStopButton();
+                    break;
+                case stopped:
+                    hideStopButton();
+                    break;
+            }
+        }
     }
 
     /**

@@ -8,7 +8,7 @@
     <string name="resetText">Reset</string>
     <string name="stopText">Stop</string>
     <string name="backgroundText">CPRE 388</string>
-    <string name="timerMs">.0</string>
+    <string name="timerMs">.0000</string>
     
     
 </resources>

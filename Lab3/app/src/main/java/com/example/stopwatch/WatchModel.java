@@ -8,7 +8,7 @@ import java.util.Locale;
  */
 
 public class WatchModel {
-    private enum stateEnum {
+    enum stateEnum {
         running,
         paused,
         stopped
@@ -49,7 +49,11 @@ public class WatchModel {
     }
 
     public String toString() {
-        return String.format(Locale.getDefault(), "%2d:%2d:%2d.%4d", getHr(), getMin(), getSec(), getMs());
+        return String.format(Locale.getDefault(), "%2d:%2d:%2d", getHr(), getMin(), getSec());
+    }
+
+    public String toStringMs() {
+        return String.format(Locale.getDefault(), ".%4d", getMs());
     }
 
     public stateEnum getCurrentState() {
