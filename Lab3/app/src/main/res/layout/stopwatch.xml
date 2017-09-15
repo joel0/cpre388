@@ -21,15 +21,13 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical" >
-            
-            
-            <!-- TODO: Draw the timerbackground image for the Linear layout below-->
-            <LinearLayout              
+
+            <LinearLayout
                 android:id="@+id/timerBackground"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                
+                android:background="@drawable/timerbackground"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:layout_weight="1" >
@@ -50,16 +48,13 @@
                     android:textSize="18sp" />
 
             </LinearLayout>
-            
-            
-            
-            <!-- TODO: Draw the button area image for the Linear layout below-->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-
+                android:background="@drawable/buttonarea"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -73,14 +68,6 @@
                     android:text="@string/stopText"
                     android:visibility="gone"/>
 
-
-                <!-- TODO: Create a start button and give it an id!
-                         Set the width and height!
-                         Set the text of the start button which is given in the strings.xml file!
-                         Set the background image from res/drawable folder, "@drawable/btn_start"
-                         Customize the button youself!
-                         
-                         -->
                 <Button
                     android:id="@+id/buttonStart"
                     android:layout_width="wrap_content"
@@ -89,14 +76,6 @@
                     android:onClick="startClick"
                     android:text="@string/startText" />
 
-
-                <!-- TODO: Create a reset button and give it an id!
-                         Set the width and height!
-                         Set the text of the reset button which is given in the strings.xml file!
-                         Set the background image from the res/drawable folder, "@drawable/btn_reset"
-                         Customize the button youself!
-                         
-                         -->
                 <Button
                     android:id="@+id/buttonReset"
                     android:layout_width="wrap_content"

@@ -23,6 +23,7 @@ public class StopWatchActivity extends Activity {
 
     private WatchModel watch = new WatchModel();
     private TextView mTimerText;
+    private TextView mTimerTextMs;
     private Button mButtonStart;
     private Button mButtonStop;
     private Button mButtonReset;
@@ -37,6 +38,7 @@ public class StopWatchActivity extends Activity {
         setContentView(R.layout.stopwatch);
 
         mTimerText = (TextView) findViewById(R.id.timerText);
+        mTimerTextMs = (TextView) findViewById(R.id.timerTextMs);
         mButtonStart = (Button) findViewById(R.id.buttonStart);
         mButtonStop = (Button) findViewById(R.id.buttonStop);
         mButtonReset = (Button) findViewById(R.id.buttonReset);
@@ -94,20 +96,10 @@ public class StopWatchActivity extends Activity {
 
     /**
      * Converts the elapsed given time and updates the display
-     *
-     * @param time the time to update the current display to
      */
-    private void updateTimer (long time){
-
-
-        //Convert the milliseconds,seconds,minutes,hours to String and format to ensure it has a leading zero when required
-        //TODO
-
-
-
-        //Setting the timer text to the elapsed time
-        //TODO
-
+    private void updateTimer(){
+        mTimerText.setText(watch.toString());
+        mTimerTextMs.setText(watch.toStringMs());
     }
 
     private class observer implements WatchModel.WatchObserver {
@@ -124,6 +116,7 @@ public class StopWatchActivity extends Activity {
                     hideStopButton();
                     break;
             }
+            updateTimer();
         }
     }
 
