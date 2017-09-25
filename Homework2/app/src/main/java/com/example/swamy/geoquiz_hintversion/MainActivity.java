@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private int qIndex = 0;
     private int MaxQ = 3;
     private int usefulness = 0;
+    private int usedHints = 0;
 
     private String questList[] = {"Capital of USA is Washington DC",
             "Capital of India is New Delhi", "Capital of Greece is olympia"};
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
                 mYesButton.setVisibility(View.INVISIBLE);
                 mNoButton.setVisibility(View.INVISIBLE);
+                mTextDisplay.setText(usedHints + " hint(s) were used");
+                usedHints = 0;
             }
 
         });
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mYesButton.setVisibility(View.INVISIBLE);
                 mNoButton.setVisibility(View.INVISIBLE);
+                mTextDisplay.setText(usedHints + " hint(s) were used");
+                usedHints = 0;
             }
 
         });
@@ -143,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(resultCode == RESULT_OK)
          {
+             usedHints = data.getIntExtra("HINTS", 0);
              usefulness = data.getIntExtra("USEFULNESS",0);
              Toast.makeText(MainActivity.this, usefulness + " hint(s) were useful.",Toast.LENGTH_LONG).show();
 

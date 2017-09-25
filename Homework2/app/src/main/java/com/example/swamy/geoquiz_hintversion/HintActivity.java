@@ -17,6 +17,7 @@ public class HintActivity extends AppCompatActivity {
     private TextView hintText;
     private ImageView hintPic;
     //whether hint is useful or not ?
+    private int childHints = 0;
     private int childUsefulness = 0;
     private int usefulness = 0;
 
@@ -96,6 +97,7 @@ public class HintActivity extends AppCompatActivity {
             case HINT_ACTIVITY:
                 if (resultCode == RESULT_OK) {
                     childUsefulness = data.getIntExtra("USEFULNESS", 0);
+                    childHints = data.getIntExtra("HINTS", 0);
                 } else {
                     childUsefulness = 0;
                 }
@@ -117,6 +119,7 @@ public class HintActivity extends AppCompatActivity {
 
         //useful or not useful
         intent2Main.putExtra("USEFULNESS",usefulness + childUsefulness);
+        intent2Main.putExtra("HINTS",childHints + 1);
         setResult(RESULT_OK, intent2Main);
     }
 
