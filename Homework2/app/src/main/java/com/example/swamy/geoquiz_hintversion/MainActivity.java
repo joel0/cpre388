@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int MaxQ = 3;
     private int usefulness = 0;
     private int usedHints = 0;
+    private boolean questining = true;
 
     private String questList[] = {"Capital of USA is Washington DC",
             "Capital of India is New Delhi", "Capital of Greece is olympia"};
@@ -52,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
         {
             //0 is the default value incase index key was not defined before
             qIndex = savedInstanceState.getInt("index",0);
-
+            usefulness = savedInstanceState.getInt("usefulness", 0);
+            usedHints = savedInstanceState.getInt("usedHints", 0);
+            questining = savedInstanceState.getBoolean("questioning", true);
         }
 
         mYesButton = (Button) findViewById(R.id.button);
@@ -60,8 +63,19 @@ public class MainActivity extends AppCompatActivity {
         mHintButton = (Button) findViewById(R.id.button4);
 
         mTextDisplay = (TextView) findViewById(R.id.mytext);
-        mTextDisplay.setText(questList[qIndex]);
         mTextDisplay.setTextColor(Color.BLUE);
+
+        if (questining) {
+            mYesButton.setVisibility(View.VISIBLE);
+            mNoButton.setVisibility(View.VISIBLE);
+            mHintButton.setVisibility(View.VISIBLE);
+            mTextDisplay.setText(questList[qIndex]);
+        } else {
+            mYesButton.setVisibility(View.INVISIBLE);
+            mNoButton.setVisibility(View.INVISIBLE);
+            mHintButton.setVisibility(View.INVISIBLE);
+            mTextDisplay.setText(usedHints + " hint(s) were used");
+        }
 
         mYesButton.setOnClickListener(new View.OnClickListener() {
 
@@ -76,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
 
                 mYesButton.setVisibility(View.INVISIBLE);
                 mNoButton.setVisibility(View.INVISIBLE);
+                mHintButton.setVisibility(View.INVISIBLE);
                 mTextDisplay.setText(usedHints + " hint(s) were used");
                 usedHints = 0;
+                questining = false;
             }
 
         });
@@ -94,8 +110,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mYesButton.setVisibility(View.INVISIBLE);
                 mNoButton.setVisibility(View.INVISIBLE);
+                mHintButton.setVisibility(View.INVISIBLE);
                 mTextDisplay.setText(usedHints + " hint(s) were used");
                 usedHints = 0;
+                questining = false;
             }
 
         });
@@ -107,9 +125,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 qIndex = (qIndex + 1) % MaxQ;
+                questining = true;
                 mTextDisplay.setText(questList[qIndex]);
                 mYesButton.setVisibility(View.VISIBLE);
                 mNoButton.setVisibility(View.VISIBLE);
+                mHintButton.setVisibility(View.VISIBLE);
             }
 
         });
@@ -139,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
         //save the current question index
         savedInstanceState.putInt("index",qIndex);
-
+        savedInstanceState.putInt("usedfulness", usefulness);
+        savedInstanceState.putInt("usedHints", usedHints);
+        savedInstanceState.putBoolean("questioning", questining);
     }
 
     @Override
