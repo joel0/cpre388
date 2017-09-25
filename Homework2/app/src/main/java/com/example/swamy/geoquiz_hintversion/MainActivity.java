@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mYesButton;
     private Button mNoButton;
     private TextView mTextDisplay;
+    private TextView mHintUsefulnessText;
     private Button mNextButton;
     private Button mHintButton;
 
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private int MaxQ = 3;
     private int usefulness = 0;
     private int usedHints = 0;
+    private int totalUsefulness = 0;
+    private int totalHints = 0;
     private boolean questining = true;
 
     private String questList[] = {"Capital of USA is Washington DC",
@@ -56,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
             usefulness = savedInstanceState.getInt("usefulness", 0);
             usedHints = savedInstanceState.getInt("usedHints", 0);
             questining = savedInstanceState.getBoolean("questioning", true);
+            totalUsefulness = savedInstanceState.getInt("totalUsefulness", 0);
+            totalHints = savedInstanceState.getInt("totalHints", 0);
         }
+
+        mHintUsefulnessText = (TextView) findViewById(R.id.hintUsefulnessText);
 
         mYesButton = (Button) findViewById(R.id.button);
         mNoButton = (Button) findViewById(R.id.button2);
@@ -150,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+        updateUI();
     }
 
     @Override
@@ -162,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putInt("usedfulness", usefulness);
         savedInstanceState.putInt("usedHints", usedHints);
         savedInstanceState.putBoolean("questioning", questining);
+        savedInstanceState.putInt("totalUsefulness", totalUsefulness);
+        savedInstanceState.putInt("totalHints", totalHints);
     }
 
     @Override
@@ -172,6 +182,9 @@ public class MainActivity extends AppCompatActivity {
          {
              usedHints = data.getIntExtra("HINTS", 0);
              usefulness = data.getIntExtra("USEFULNESS",0);
+             totalHints += usedHints;
+             totalUsefulness += usefulness;
+             updateUI();
              Toast.makeText(MainActivity.this, usefulness + " hint(s) were useful.",Toast.LENGTH_LONG).show();
 
             /*if(usefulness == 1)
@@ -186,5 +199,10 @@ public class MainActivity extends AppCompatActivity {
         else {
             //handle this situation
         }
+    }
+
+    private void updateUI() {
+        double percent = ((double) totalUsefulness) / totalHints * 100.0;
+        mHintUsefulnessText.setText(String.format("%.0f%% hints were useful", percent));
     }
 }

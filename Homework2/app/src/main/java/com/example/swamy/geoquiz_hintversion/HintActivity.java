@@ -2,6 +2,7 @@ package com.example.swamy.geoquiz_hintversion;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +21,9 @@ public class HintActivity extends AppCompatActivity {
     private int childHints = 0;
     private int childUsefulness = 0;
     private int usefulness = 0;
+    private boolean hintUsed = false;
+    private long remainingTime = 5000;
+    private Handler handler = new Handler();
 
     private Button useful;
     private Button notuseful;
@@ -44,6 +48,13 @@ public class HintActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hint);
+
+        //restore saved state if we got killed earlier
+        if(savedInstanceState != null)
+        {
+            hintUsed = savedInstanceState.getBoolean("hintUsed", false);
+            remainingTime = savedInstanceState.getLong("remainingTime", remainingTime);
+        }
 
         NextHint = (Button) findViewById(R.id.next_hint_button);
 
@@ -75,20 +86,41 @@ public class HintActivity extends AppCompatActivity {
         hintText = (TextView) findViewById(R.id.mytext) ;
         hIndex1 = getIntent().getIntExtra("QUEST_INDEX", MaxQ);
         hIndex2 = getIntent().getIntExtra("HINT_INDEX", 0);
-        if (isLastHint()) {
-            NextHint.setVisibility(View.INVISIBLE);
-        }
-        hintText.setText(hintList[hIndex1][hIndex2]);
-        if (picHintList[hIndex1][hIndex2] != null) {
-            hintPic.setImageResource(picHintList[hIndex1][hIndex2]);
+
+        updateUI();
+        if (!hintUsed) {
+            handler.postDelayed(forceNextHint, remainingTime);
         }
     }
 
     public void nextHintClick(View v) {
+        nextHint();
+    }
+
+    private void nextHint() {
+        handler.removeCallbacksAndMessages(null);
+        if (isLastHint()) {
+            return;
+        }
         Intent nextHint = new Intent(this, HintActivity.class);
         nextHint.putExtra("QUEST_INDEX", hIndex1);
         nextHint.putExtra("HINT_INDEX", hIndex2 + 1);
         startActivityForResult(nextHint, HINT_ACTIVITY);
+    }
+
+    private void updateUI() {
+        if (isLastHint()) {
+            NextHint.setVisibility(View.INVISIBLE);
+        }
+        if (hintUsed) {
+            hintText.setText(R.string.hint_used);
+            hintPic.setVisibility(View.INVISIBLE);
+        } else {
+            hintText.setText(hintList[hIndex1][hIndex2]);
+            if (picHintList[hIndex1][hIndex2] != null) {
+                hintPic.setImageResource(picHintList[hIndex1][hIndex2]);
+            }
+        }
     }
 
     @Override
@@ -109,6 +141,7 @@ public class HintActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        handler.removeCallbacksAndMessages(null);
         sendResult();
         super.onBackPressed();
     }
@@ -127,4 +160,23 @@ public class HintActivity extends AppCompatActivity {
         return hIndex2 >= hintList[hIndex1].length - 1;
     }
 
+    private Runnable forceNextHint = new Runnable() {
+        @Override
+        public void run() {
+            hintUsed = true;
+            updateUI();
+            nextHint();
+        }
+    };
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        //android framework will do its share of the job
+        super.onSaveInstanceState(savedInstanceState);
+        handler.removeCallbacksAndMessages(null);
+        savedInstanceState.putBoolean("hintUsed", hintUsed);
+        if (handler.hasMessages(0)) {
+            savedInstanceState.putLong("remainingTime", handler.obtainMessage(0).getWhen());
+        }
+    }
 }

@@ -12,6 +12,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/the_blue_marble_earth1"/>-->
+
     <TextView
         android:id="@+id/mytext"
         android:layout_width="wrap_content"
@@ -52,5 +53,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:text="Show Hint" />
+
+    <TextView
+        android:id="@+id/hintUsefulnessText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Usefulness" />
 
 </LinearLayout>
