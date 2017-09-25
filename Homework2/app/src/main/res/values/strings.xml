@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GeoQuiz_Hintversion</string>
+    <string name="next_hint">Next Hint</string>
 </resources>

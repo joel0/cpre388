@@ -143,16 +143,17 @@ public class MainActivity extends AppCompatActivity {
 
         if(resultCode == RESULT_OK)
          {
-            usefulness = data.getIntExtra("USEFULNESS",0);
+             usefulness = data.getIntExtra("USEFULNESS",0);
+             Toast.makeText(MainActivity.this, usefulness + " hint(s) were useful.",Toast.LENGTH_LONG).show();
 
-            if(usefulness == 1)
+            /*if(usefulness == 1)
             {
                 Toast.makeText(MainActivity.this, "Glad the hint was useful",Toast.LENGTH_LONG).show();
             }
             else
             {
                 Toast.makeText(MainActivity.this, "Sorry the hint was not useful",Toast.LENGTH_LONG).show();
-            }
+            }*/
         }
         else {
             //handle this situation

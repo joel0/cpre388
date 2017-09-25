@@ -1,19 +1,21 @@
 package com.example.swamy.geoquiz_hintversion;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class HintActivity extends AppCompatActivity {
 
-    private int hIndex = 0;
+    private int hIndex1 = 0;
+    private int hIndex2 = 0;
     private int MaxQ = 3;
     private TextView hintText;
     //whether hint is useful or not ?
+    private int childUsefulness = 0;
     private int usefulness = 0;
 
     private Button useful;
@@ -21,13 +23,21 @@ public class HintActivity extends AppCompatActivity {
 
     private Button NextHint;
 
-    private String hintList[] = {"Location of White House",
-            "Northern part of India", "Greek goddess", "No Hint Found"};
+    private final static int HINT_ACTIVITY = 1;
+
+    private String hintList[][] = {
+            {"Location of White House", "h01", "h02"},
+            {"Northern part of India", "h11", "h12"},
+            {"Greek goddess", "h21", "h22"},
+            {"No Hint Found"}};
+    // TODO picture hints
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hint);
+
+        NextHint = (Button) findViewById(R.id.next_hint_button);
 
         useful = (Button) findViewById(R.id.button5);
         useful.setOnClickListener(new View.OnClickListener() {
@@ -36,7 +46,7 @@ public class HintActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 usefulness = 1;
-                sendResult();
+                //sendResult();
             }
 
         });
@@ -48,24 +58,59 @@ public class HintActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 usefulness = 0;
-                sendResult();
+                //sendResult();
             }
 
         });
 
         hintText = (TextView) findViewById(R.id.mytext) ;
-        hIndex = getIntent().getIntExtra("QUEST_INDEX", MaxQ);
-        hintText.setText(hintList[hIndex]);
+        hIndex1 = getIntent().getIntExtra("QUEST_INDEX", MaxQ);
+        hIndex2 = getIntent().getIntExtra("HINT_INDEX", 0);
+        if (isLastHint()) {
+            NextHint.setVisibility(View.INVISIBLE);
+        }
+        hintText.setText(hintList[hIndex1][hIndex2]);
     }
 
+    public void nextHintClick(View v) {
+        Intent nextHint = new Intent(this, HintActivity.class);
+        nextHint.putExtra("QUEST_INDEX", hIndex1);
+        nextHint.putExtra("HINT_INDEX", hIndex2 + 1);
+        startActivityForResult(nextHint, HINT_ACTIVITY);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case HINT_ACTIVITY:
+                if (resultCode == RESULT_OK) {
+                    childUsefulness = data.getIntExtra("USEFULNESS", 0);
+                } else {
+                    childUsefulness = 0;
+                }
+                break;
+            default:
+                // do nothing
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        sendResult();
+        super.onBackPressed();
+    }
 
     void sendResult()
     {
         Intent intent2Main = new Intent();
 
         //useful or not useful
-        intent2Main.putExtra("USEFULNESS",usefulness);
+        intent2Main.putExtra("USEFULNESS",usefulness + childUsefulness);
         setResult(RESULT_OK, intent2Main);
+    }
+
+    private boolean isLastHint() {
+        return hIndex2 >= hintList[hIndex1].length - 1;
     }
 
 }
