@@ -28,7 +28,13 @@
         android:layout_height="wrap_content"
         android:text="Text Goes Here"
         android:padding="24dp" />
-<LinearLayout
+
+    <ImageView
+        android:id="@+id/picHint"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+    <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation = "horizontal"

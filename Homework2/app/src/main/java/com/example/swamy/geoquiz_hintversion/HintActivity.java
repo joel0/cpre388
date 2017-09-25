@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class HintActivity extends AppCompatActivity {
@@ -14,6 +15,7 @@ public class HintActivity extends AppCompatActivity {
     private int hIndex2 = 0;
     private int MaxQ = 3;
     private TextView hintText;
+    private ImageView hintPic;
     //whether hint is useful or not ?
     private int childUsefulness = 0;
     private int usefulness = 0;
@@ -26,11 +28,16 @@ public class HintActivity extends AppCompatActivity {
     private final static int HINT_ACTIVITY = 1;
 
     private String hintList[][] = {
-            {"Location of White House", "h01", "h02"},
-            {"Northern part of India", "h11", "h12"},
-            {"Greek goddess", "h21", "h22"},
+            {"Location of White House", "Picture", "President lives here"},
+            {"Northern part of India", "Picture", "New Delhi is one of Delhi city's 11 districts."},
+            {"Greek goddess", "Olympia is also a city in Washington state", "Greece is ancient"},
             {"No Hint Found"}};
-    // TODO picture hints
+    private Integer picHintList[][] = {
+            {null, R.drawable.hint_wh, null},
+            {null, R.drawable.hint_delhi, null},
+            {null, null, null},
+            {null}
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,7 @@ public class HintActivity extends AppCompatActivity {
 
         });
 
+        hintPic = (ImageView) findViewById(R.id.picHint);
         hintText = (TextView) findViewById(R.id.mytext) ;
         hIndex1 = getIntent().getIntExtra("QUEST_INDEX", MaxQ);
         hIndex2 = getIntent().getIntExtra("HINT_INDEX", 0);
@@ -70,6 +78,9 @@ public class HintActivity extends AppCompatActivity {
             NextHint.setVisibility(View.INVISIBLE);
         }
         hintText.setText(hintList[hIndex1][hIndex2]);
+        if (picHintList[hIndex1][hIndex2] != null) {
+            hintPic.setImageResource(picHintList[hIndex1][hIndex2]);
+        }
     }
 
     public void nextHintClick(View v) {
