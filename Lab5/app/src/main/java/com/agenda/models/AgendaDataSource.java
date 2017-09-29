@@ -1,6 +1,7 @@
 package com.agenda.models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.agenda.models.Event;
@@ -146,6 +147,7 @@ public class AgendaDataSource {
      */
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<Event>();
+        List<Event> pastEvents = new ArrayList<>();
         
         // Query of all events
         Cursor cursor = database.query(SQLiteHelper.TABLE_EVENTS, allColumns, null, 
@@ -156,11 +158,19 @@ public class AgendaDataSource {
         // Create Event objects for each item in list
         while (!cursor.isAfterLast()) {
             Event event = cursorToEvent(cursor);
-            events.add(event);
+            if (event.getEndTime().before(new Date())) {
+                pastEvents.add(event);
+            } else {
+                events.add(event);
+            }
             cursor.moveToNext();
         }
         
         cursor.close();
+
+        for (Event event : pastEvents) {
+            deleteEvent(event);
+        }
         return events;
     }
 
