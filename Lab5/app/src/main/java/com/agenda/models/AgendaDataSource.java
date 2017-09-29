@@ -129,8 +129,8 @@ public class AgendaDataSource {
         String id_string = Long.toString(id);
 
         // TODO: Create query for single event here
-        cursor = database.query(SQLiteHelper.TABLE_EVENTS, allColumns, "? = ?",
-                new String[] {SQLiteHelper.COLUMN_ID, id_string}, null, null, null);
+        cursor = database.query(SQLiteHelper.TABLE_EVENTS, allColumns, SQLiteHelper.COLUMN_ID + " = ?",
+                new String[] {id_string}, null, null, null);
 
         cursor.moveToFirst();
         Event toReturn = cursorToEvent(cursor);
