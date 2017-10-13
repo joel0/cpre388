@@ -47,6 +47,8 @@ public class MyMediaPlayerActivity extends Activity {
     private int currentSongIndex = 0;
 
     private boolean shuffle;
+    private boolean continue_after_track;
+    private boolean source_ringtone;
 
     /**
      * List of Sounds that can be played in the form of SongObjects
@@ -58,6 +60,7 @@ public class MyMediaPlayerActivity extends Activity {
 
     private static final String TAG = "MyMediaPlayerActivity";
     private static final int SONG_CHOOSER = 1;
+    private static final int PREFERENCES = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +70,12 @@ public class MyMediaPlayerActivity extends Activity {
         songTitleLabel = (TextView) findViewById(R.id.songTitle);
         mPlayPauseButton = (Button) findViewById(R.id.playpausebutton);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+        /*prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
                 loadPreferences(sharedPreferences);
             }
-        });
+        });*/
         loadPreferences(prefs);
 
         // Initialize the media player
@@ -81,7 +84,11 @@ public class MyMediaPlayerActivity extends Activity {
 
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                nextClick(null);
+                if (continue_after_track) {
+                    nextClick(null);
+                } else {
+                    updateUI();
+                }
             }
         });
 
@@ -95,7 +102,18 @@ public class MyMediaPlayerActivity extends Activity {
     private void loadPreferences(SharedPreferences prefs) {
         Resources res = getResources();
         shuffle = prefs.getBoolean(res.getString(R.string.mp_shuffle_pref), false);
+        continue_after_track = prefs.getBoolean(res.getString(R.string.mp_continue_pref), true);
+        Log.i(TAG, "source: " + prefs.getString(res.getString(R.string.mp_source_pref), "music"));
+        if (prefs.getString(res.getString(R.string.mp_source_pref), "music")
+                .equals("music")) {
+            source_ringtone = false;
+        } else {
+            source_ringtone = true;
+        }
+        populateSongsList();
         Log.v(TAG, "Shuffle:" + Boolean.toString(shuffle));
+        Log.v(TAG, "Continue after track:" + continue_after_track);
+        Log.v(TAG, "Ringtone source:" + source_ringtone);
     }
 
     @Override
@@ -120,7 +138,7 @@ public class MyMediaPlayerActivity extends Activity {
             // Display Settings page
             //TODO
             Intent preferences = new Intent(this, MediaPreferences.class);
-            startActivity(preferences);
+            startActivityForResult(preferences, PREFERENCES);
 
             return true;
         default:
@@ -171,7 +189,13 @@ public class MyMediaPlayerActivity extends Activity {
         //TODO add all songs from audio content URI to this.songsList
         String[] mProjection = new String[] {
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA};
-        String mSelectionClause = MediaStore.Audio.Media.IS_RINGTONE + " = 1";
+        String mSelectionClause;
+
+        if (source_ringtone) {
+            mSelectionClause = MediaStore.Audio.Media.IS_RINGTONE + " = 1";
+        } else {
+            mSelectionClause = MediaStore.Audio.Media.IS_MUSIC + " = 1";
+        }
 
         // Get a Cursor object from the content URI
         Cursor mCursor = getContentResolver().query(
@@ -183,10 +207,11 @@ public class MyMediaPlayerActivity extends Activity {
         
         // Use the cursor to loop through the results and add them to 
         //        the songsList as SongObjects
+        songsList.clear();
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
-                    Log.v(TAG, mCursor.getString(0));
+                    //Log.v(TAG, mCursor.getString(0));
                     songsList.add(new SongObject(mCursor.getString(0), mCursor.getString(1)));
                 } while (mCursor.moveToNext());
             }
@@ -245,6 +270,12 @@ public class MyMediaPlayerActivity extends Activity {
                 case SONG_CHOOSER:
                     currentSongIndex = data.getIntExtra("songIndex", 0);
                     playSong(currentSongIndex);
+                    break;
+            }
+        } else {
+            switch (requestCode) {
+                case PREFERENCES:
+                    loadPreferences(prefs);
                     break;
             }
         }

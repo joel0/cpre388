@@ -5,5 +5,7 @@
     <string name="preferences">Preferences</string>
     <string name="choose_song">Choose a Song</string>
     <string name="mp_shuffle_pref">mp_shuffle_preference</string>
+    <string name="mp_continue_pref">mp_continue_preference</string>
+    <string name="mp_source_pref">mp_source_preference</string>
 
 </resources>

@@ -7,5 +7,17 @@
             android:key="@string/mp_shuffle_pref"
             android:summary="play songs in random order"
             android:title="Shuffle" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/mp_continue_pref"
+            android:summary="continue playlist at end of song"
+            android:title="Continue Playback" />
+        <ListPreference
+            android:defaultValue="0"
+            android:key="@string/mp_source_pref"
+            android:summary="media list source"
+            android:title="Media Source"
+            android:entries="@array/sources_entries"
+            android:entryValues="@array/sources_values" />
     </PreferenceCategory>
 </PreferenceScreen>
