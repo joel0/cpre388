@@ -62,6 +62,13 @@ public class MyMediaPlayerActivity extends Activity {
 
         // Initialize the media player
         mp = new MediaPlayer();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                nextClick(null);
+            }
+        });
 
         // Getting all songs in a list
         populateSongsList();
