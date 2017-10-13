@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class MyMediaPlayerActivity extends Activity {
     private static ArrayList<SongObject> songsList = new ArrayList<SongObject>();
 
     private ListView mSongListView;
+    private Button mPlayPauseButton;
 
     private static final String TAG = "MyMediaPlayerActivity";
 
@@ -56,6 +58,7 @@ public class MyMediaPlayerActivity extends Activity {
 
         songTitleLabel = (TextView) findViewById(R.id.songTitle);
         mSongListView = (ListView) findViewById(R.id.songListView);
+        mPlayPauseButton = (Button) findViewById(R.id.playpausebutton);
 
         // Initialize the media player
         mp = new MediaPlayer();
@@ -115,8 +118,7 @@ public class MyMediaPlayerActivity extends Activity {
                 String songTitle = songsList.get(songIndex).getTitle();
                 songTitleLabel.setText(songTitle);
 
-                // Changing Button Image to pause image
-                ((Button)findViewById(R.id.playpausebutton)).setBackgroundResource(R.drawable.btn_pause);
+                updateUI();
 
                 // Update song index
                 currentSongIndex = songIndex;
@@ -170,6 +172,35 @@ public class MyMediaPlayerActivity extends Activity {
      */
     public static ArrayList<SongObject> getSongsList(){
         return songsList;
+    }
+
+    public void nextClick(View v) {
+        currentSongIndex = (currentSongIndex + 1) % songsList.size();
+        playSong(currentSongIndex);
+    }
+
+    public void prevClick(View v) {
+        currentSongIndex = (currentSongIndex - 1) % songsList.size();
+        playSong(currentSongIndex);
+    }
+
+    public void playPauseClick(View v) {
+        if (mp.isPlaying()) {
+            mp.pause();
+        } else {
+            mp.start();
+        }
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (mp.isPlaying()) {
+            // Changing Button Image to pause image
+            mPlayPauseButton.setBackgroundResource(R.drawable.btn_pause);
+        } else {
+            // Changing Button Image to play image
+            mPlayPauseButton.setBackgroundResource(R.drawable.btn_play);
+        }
     }
 
 }

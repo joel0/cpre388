@@ -36,20 +36,23 @@
             android:id="@+id/backbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btn_back" />
+            android:background="@drawable/btn_back"
+            android:onClick="prevClick" />
 
         <Button
             android:id="@+id/playpausebutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:background="@drawable/btn_play" />
+            android:background="@drawable/btn_play"
+            android:onClick="playPauseClick" />
 
         <Button
             android:id="@+id/forwardbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btn_forward" />
+            android:background="@drawable/btn_forward"
+            android:onClick="nextClick" />
     </LinearLayout>
 
 </RelativeLayout>
