@@ -3,13 +3,17 @@ package com.example.mediaplayerpreferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -42,12 +46,15 @@ public class MyMediaPlayerActivity extends Activity {
      */
     private int currentSongIndex = 0;
 
+    private boolean shuffle;
+
     /**
      * List of Sounds that can be played in the form of SongObjects
      */
     private static ArrayList<SongObject> songsList = new ArrayList<SongObject>();
 
     private Button mPlayPauseButton;
+    private SharedPreferences prefs;
 
     private static final String TAG = "MyMediaPlayerActivity";
     private static final int SONG_CHOOSER = 1;
@@ -59,6 +66,14 @@ public class MyMediaPlayerActivity extends Activity {
 
         songTitleLabel = (TextView) findViewById(R.id.songTitle);
         mPlayPauseButton = (Button) findViewById(R.id.playpausebutton);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+                loadPreferences(sharedPreferences);
+            }
+        });
+        loadPreferences(prefs);
 
         // Initialize the media player
         mp = new MediaPlayer();
@@ -75,6 +90,12 @@ public class MyMediaPlayerActivity extends Activity {
 
         // By default play first song if there is one in the list
         playSong(0);
+    }
+
+    private void loadPreferences(SharedPreferences prefs) {
+        Resources res = getResources();
+        shuffle = prefs.getBoolean(res.getString(R.string.mp_shuffle_pref), false);
+        Log.v(TAG, "Shuffle:" + Boolean.toString(shuffle));
     }
 
     @Override
@@ -98,7 +119,8 @@ public class MyMediaPlayerActivity extends Activity {
         case R.id.menu_preferences:
             // Display Settings page
             //TODO
-
+            Intent preferences = new Intent(this, MediaPreferences.class);
+            startActivity(preferences);
 
             return true;
         default:
@@ -181,7 +203,12 @@ public class MyMediaPlayerActivity extends Activity {
     }
 
     public void nextClick(View v) {
-        currentSongIndex = (currentSongIndex + 1) % songsList.size();
+        if (shuffle) {
+            Random rand = new Random();
+            currentSongIndex = rand.nextInt(songsList.size());
+        } else {
+            currentSongIndex = (currentSongIndex + 1) % songsList.size();
+        }
         playSong(currentSongIndex);
     }
 
