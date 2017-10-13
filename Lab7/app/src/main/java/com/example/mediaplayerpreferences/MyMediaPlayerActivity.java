@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -44,6 +45,8 @@ public class MyMediaPlayerActivity extends Activity {
      */
     private static ArrayList<SongObject> songsList = new ArrayList<SongObject>();
 
+    private ListView mSongListView;
+
     private static final String TAG = "MyMediaPlayerActivity";
 
     @Override
@@ -52,6 +55,7 @@ public class MyMediaPlayerActivity extends Activity {
         setContentView(R.layout.media_player_main);
 
         songTitleLabel = (TextView) findViewById(R.id.songTitle);
+        mSongListView = (ListView) findViewById(R.id.songListView);
 
         // Initialize the media player
         mp = new MediaPlayer();
@@ -61,6 +65,8 @@ public class MyMediaPlayerActivity extends Activity {
 
         // By default play first song if there is one in the list
         playSong(0);
+
+        mSongListView.setAdapter(new SongListAdapter(this, R.layout.song_list_item, songsList));
     }
 
     @Override
@@ -96,7 +102,7 @@ public class MyMediaPlayerActivity extends Activity {
      * Helper function to play a song at a specific index of songsList
      * @param songIndex - index of song to be played
      */
-    public void  playSong(int songIndex){
+    public void playSong(int songIndex){
         // Play song if index is within the songsList
         if (songIndex < songsList.size() && songIndex >= 0) {
             try {
