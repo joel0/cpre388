@@ -5,36 +5,36 @@ package com.example.mediaplayerpreferences;
  */
 public class SongObject {
 
-	/**
-	 * The title of the audio file
-	 */
-	private String title;
-	
-	/**
-	 * The file path of the audio file 
-	 */
-	private String filePath;
-	
-	public SongObject(String title, String filePath){
-		super();
-		this.title = title;
-		this.filePath = filePath;
-	}
+    /**
+     * The title of the audio file
+     */
+    private String title;
+    
+    /**
+     * The file path of the audio file 
+     */
+    private String filePath;
+    
+    public SongObject(String title, String filePath){
+        super();
+        this.title = title;
+        this.filePath = filePath;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getFilePath() {
-		return filePath;
-	}
+    public String getFilePath() {
+        return filePath;
+    }
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-	
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+    
 }
