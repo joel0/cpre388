@@ -151,6 +151,7 @@ public class MyMediaPlayerActivity extends Activity {
             if (mCursor.moveToFirst()) {
                 do {
                     Log.v(TAG, mCursor.getString(0));
+                    songsList.add(new SongObject(mCursor.getString(0), mCursor.getString(1)));
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
