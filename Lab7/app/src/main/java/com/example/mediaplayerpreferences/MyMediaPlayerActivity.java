@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -46,10 +47,10 @@ public class MyMediaPlayerActivity extends Activity {
      */
     private static ArrayList<SongObject> songsList = new ArrayList<SongObject>();
 
-    private ListView mSongListView;
     private Button mPlayPauseButton;
 
     private static final String TAG = "MyMediaPlayerActivity";
+    private static final int SONG_CHOOSER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,6 @@ public class MyMediaPlayerActivity extends Activity {
         setContentView(R.layout.media_player_main);
 
         songTitleLabel = (TextView) findViewById(R.id.songTitle);
-        mSongListView = (ListView) findViewById(R.id.songListView);
         mPlayPauseButton = (Button) findViewById(R.id.playpausebutton);
 
         // Initialize the media player
@@ -75,8 +75,6 @@ public class MyMediaPlayerActivity extends Activity {
 
         // By default play first song if there is one in the list
         playSong(0);
-
-        mSongListView.setAdapter(new SongListAdapter(this, R.layout.song_list_item, songsList));
     }
 
     @Override
@@ -93,7 +91,8 @@ public class MyMediaPlayerActivity extends Activity {
         case R.id.menu_choose_song:
             // Open SongList to display a list of audio files to play
             //TODO
-
+            Intent songChooser = new Intent(this, SongList.class);
+            startActivityForResult(songChooser, SONG_CHOOSER);
 
             return true;
         case R.id.menu_preferences:
@@ -210,4 +209,17 @@ public class MyMediaPlayerActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case SONG_CHOOSER:
+                    currentSongIndex = data.getIntExtra("songIndex", 0);
+                    playSong(currentSongIndex);
+                    break;
+            }
+        }
+    }
 }
