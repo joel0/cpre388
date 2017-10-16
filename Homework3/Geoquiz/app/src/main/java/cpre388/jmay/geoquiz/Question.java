@@ -61,6 +61,15 @@ public class Question {
                 3, "Tom and Jerry", "Joel and Matthew", "John and John", "Lewis and Clark", "Wilbur and Orville Wright"));
         questions.add(new Question("What city is Iowa State University in?",
                 1, "Iowa City", "Ames", "Hawkeye Towne", "Des Moines", "DC"));
-        return (Question[]) questions.toArray();
+        return questions.toArray(new Question[questions.size()]);
+    }
+
+    public static String[] questionsToStringArray(Question[] questions) {
+        ArrayList<String> out = new ArrayList<>();
+        for (Question question :
+                questions) {
+            out.add(question.getQuestion());
+        }
+        return out.toArray(new String[out.size()]);
     }
 }

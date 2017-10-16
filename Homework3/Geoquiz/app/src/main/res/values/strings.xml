@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Geoquiz</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Question list goes here</string>
 </resources>
