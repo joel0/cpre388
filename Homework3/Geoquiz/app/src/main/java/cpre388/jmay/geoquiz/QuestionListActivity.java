@@ -45,7 +45,7 @@ public class QuestionListActivity extends SingleFragmentActivity
             Bundle args = new Bundle();
             args.putInt(AnswerListActivity.EXTRA_QUESTION_INDEX, questionIndex);
             newDetail.setArguments(args);
-            
+
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_detail_container, newDetail)
                     .commit();
