@@ -13,6 +13,11 @@ public class QuestionListActivity extends SingleFragmentActivity {
     private Question[] mQuestions;
 
     @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_masterdetail;
+    }
+
+    @Override
     protected Fragment createFragment() {
         Fragment fragment = new QuestionListFragment();
         return fragment;
