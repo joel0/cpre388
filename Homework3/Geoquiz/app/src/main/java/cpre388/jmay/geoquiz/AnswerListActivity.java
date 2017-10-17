@@ -23,4 +23,11 @@ public class AnswerListActivity extends SingleFragmentActivity {
         fragment.setArguments(args);
         return fragment;
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        setResult(RESULT_OK);
+        finish();
+    }
 }

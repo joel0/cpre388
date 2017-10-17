@@ -37,8 +37,6 @@ public class AnswerListFragment extends Fragment {
         if (getArguments() != null) {
             int questionIndex = getArguments().getInt(EXTRA_QUESTION_INDEX);
             mQuestion = Question.getInstance()[questionIndex];
-        } else {
-            // TODO exception
         }
     }
 
@@ -55,9 +53,9 @@ public class AnswerListFragment extends Fragment {
         return v;
     }
 
-
     private void updateUI() {
         mQuestionText.setText(mQuestion.getQuestion());
+        mAnswerLinearLayout.removeAllViewsInLayout();
         for (int i = 0; i < mQuestion.getAnswers().length; i++) {
             Button newButton = new Button(getContext());
             newButton.setText(mQuestion.getAnswer(i));
