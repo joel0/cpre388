@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import layout.AnswerListFragment;
 import layout.QuestionListFragment;
@@ -15,6 +16,11 @@ public class AnswerListActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        return new AnswerListFragment();
+        Fragment fragment = new AnswerListFragment();
+        Bundle args = new Bundle();
+        int questionIndex = getIntent().getIntExtra(EXTRA_QUESTION_INDEX, 0);
+        args.putInt(EXTRA_QUESTION_INDEX, questionIndex);
+        fragment.setArguments(args);
+        return fragment;
     }
 }

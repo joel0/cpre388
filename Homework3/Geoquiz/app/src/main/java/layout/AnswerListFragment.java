@@ -2,18 +2,24 @@ package layout;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import cpre388.jmay.geoquiz.Question;
 import cpre388.jmay.geoquiz.R;
+
+import static cpre388.jmay.geoquiz.AnswerListActivity.EXTRA_QUESTION_INDEX;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AnswerListFragment extends Fragment {
-
+    private Question mQuestion;
+    private TextView mQuestionText;
 
     public AnswerListFragment() {
         // Required empty public constructor
@@ -21,10 +27,33 @@ public class AnswerListFragment extends Fragment {
 
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            int questionIndex = getArguments().getInt(EXTRA_QUESTION_INDEX);
+            mQuestion = Question.getInstance()[questionIndex];
+        } else {
+            // TODO exception
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_answer_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_answer_list, container, false);
+        mQuestionText = (TextView) v.findViewById(R.id.question_title_answer_fragment);
+
+        updateUI();
+
+        return v;
+    }
+
+
+    private void updateUI() {
+        mQuestionText.setText(mQuestion.getQuestion());
+        // TODO update answers and add handlers
     }
 
 }
