@@ -23,6 +23,8 @@ public class Question {
      */
     private int mCorrectAnswer;
 
+    private static Question[] mSintletonQuestions = null;
+
     public Question(String question, int correctAnswerIndex, String... answers) {
         if (correctAnswerIndex >= answers.length || correctAnswerIndex < 0) {
             throw new IllegalArgumentException(
@@ -62,6 +64,13 @@ public class Question {
         questions.add(new Question("What city is Iowa State University in?",
                 1, "Iowa City", "Ames", "Hawkeye Towne", "Des Moines", "DC"));
         return questions.toArray(new Question[questions.size()]);
+    }
+
+    public static Question[] getInstance() {
+        if (mSintletonQuestions == null) {
+            mSintletonQuestions = getSampleQuestions();
+        }
+        return mSintletonQuestions;
     }
 
     public static String[] questionsToStringArray(Question[] questions) {

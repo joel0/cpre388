@@ -15,10 +15,6 @@ public class QuestionListActivity extends SingleFragmentActivity {
     @Override
     protected Fragment createFragment() {
         Fragment fragment = new QuestionListFragment();
-        Bundle args = new Bundle();
-        // TODO use static final tag
-        args.putStringArray("questions", Question.questionsToStringArray(mQuestions));
-        fragment.setArguments(args);
         return fragment;
     }
 
