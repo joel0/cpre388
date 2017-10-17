@@ -2,7 +2,6 @@ package layout;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,10 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-
-import java.util.List;
 
 import cpre388.jmay.geoquiz.AnswerListActivity;
 import cpre388.jmay.geoquiz.Question;
@@ -24,6 +20,23 @@ public class QuestionListFragment extends Fragment {
     private QuestionAdapter mAdapter;
 
     private Question[] mQuestions;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks {
+        void onQuestionSelected(int questionIndex);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,26 +66,24 @@ public class QuestionListFragment extends Fragment {
 
     public class QuestionHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
-        private TextView mQuestion;
+        private TextView mQuestionText;
         private int mQuestionIndex;
 
         public QuestionHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_question, parent, false));
 
-            mQuestion = (TextView) itemView.findViewById(R.id.question_title);
+            mQuestionText = (TextView) itemView.findViewById(R.id.question_title);
             itemView.setOnClickListener(this);
         }
 
         public void bind(Question question, int questionIndex) {
             mQuestionIndex = questionIndex;
-            mQuestion.setText(question.getQuestion());
+            mQuestionText.setText(question.getQuestion());
         }
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getActivity(), AnswerListActivity.class);
-            intent.putExtra(AnswerListActivity.EXTRA_QUESTION_INDEX, mQuestionIndex);
-            startActivity(intent);
+            mCallbacks.onQuestionSelected(mQuestionIndex);
         }
     }
 
