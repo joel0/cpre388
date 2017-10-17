@@ -43,8 +43,16 @@ public class Question {
         return mAnswers;
     }
 
+    public String getAnswer(int index) {
+        return mAnswers[index];
+    }
+
     public int getCorrectAnswerIndex() {
         return mCorrectAnswer;
+    }
+
+    public boolean checkAnswer(int answerIndex) {
+        return answerIndex == mCorrectAnswer;
     }
 
     public static Question[] getSampleQuestions() {
