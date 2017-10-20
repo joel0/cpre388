@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +16,8 @@ import edu.iastate.qmurphy.compasslab.models.FlatCompass;
 import edu.iastate.qmurphy.compasslab.models.TiltCalculator;
 
 public class TiltActivity extends AppCompatActivity implements SensorUpdateCallback, View.OnClickListener {
+    private static final String TAG = "TiltActivity";
+
     private TiltCalculator mTilt;
     private ImageView mArrow;
 
@@ -22,7 +25,11 @@ public class TiltActivity extends AppCompatActivity implements SensorUpdateCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all);
-        mTilt = null; // TODO Instantiate a TiltCalculator object
+        try {
+            mTilt = new TiltCalculator(this, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         mArrow = (ImageView) findViewById(R.id.image);
         mArrow.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
@@ -50,7 +57,8 @@ public class TiltActivity extends AppCompatActivity implements SensorUpdateCallb
 
     @Override
     public void update(float orientation) {
-        // TODO Rotate arrow to orientation
+        Log.i(TAG, "Tilt orientation: " + orientation);
+        mArrow.setRotation(orientation);
     }
 
     @Override
