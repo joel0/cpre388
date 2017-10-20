@@ -1,6 +1,7 @@
 package edu.iastate.qmurphy.compasslab.models;
 
 import android.app.Service;
+import android.app.admin.SystemUpdatePolicy;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,33 +23,65 @@ public class BetterCompass implements SensorEventListener {
     private float[] mAccelerometerReading = new float[3];
     private float[] mMagnetometerReading = new float[3];
 
-    public BetterCompass(Context context, SensorUpdateCallback callback) {
-        mSensorManager = null; // TODO Get the Sensor Service using the application context
-        mMagField = null; // TODO Get a magnetic field sensor
-        mAcc = null; // TODO Get an accelerometer
+    private static final int HISTORY_COUNT = 50;
+    private float[] mRecentOrientations = new float[HISTORY_COUNT];
+    private boolean mFirstOrientationReading = true;
+
+    public BetterCompass(Context context, SensorUpdateCallback callback) throws Exception {
+        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        mMagField = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mAcc = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mCallback = callback;
+
+        if (mMagField == null) {
+            throw new Exception("Cannot find magnetic sensor");
+        }
+        if (mAcc == null) {
+            throw new Exception("Cannot find accelerometer");
+        }
     }
 
     public void start() {
-        // TODO Register listeners
+        mSensorManager.registerListener(this, mMagField, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAcc, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void stop() {
-        // TODO Unregister listeners
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            // TODO Store magnetic field data in mMagnetometerReading
+            System.arraycopy(event.values, 0, mMagnetometerReading, 0, mMagnetometerReading.length);
         }
         else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            // TODO Store accelerometer data in mAccelerometerReading
+            System.arraycopy(event.values, 0, mAccelerometerReading, 0, mAccelerometerReading.length);
         }
 
-        // TODO Get orientation from magnetometer and accelerometer
+        float orientation;
+        float[] rotationMatrix = new float[9];
+        float[] orientationAngles = new float[3];
+        SensorManager.getRotationMatrix(rotationMatrix, null,
+                mAccelerometerReading, mMagnetometerReading);
+        SensorManager.getOrientation(rotationMatrix, orientationAngles);
+        orientation = -(float) Math.toDegrees(orientationAngles[0]);
 
-        float orientation = 0.0f;
+        if (mFirstOrientationReading) {
+            for (int i = 0; i < mRecentOrientations.length; i++) {
+                mRecentOrientations[i] = orientation;
+            }
+        } else {
+            // Left shift the array
+            System.arraycopy(mRecentOrientations, 1, mRecentOrientations,
+                    0, mRecentOrientations.length - 1);
+            mRecentOrientations[mRecentOrientations.length + 1] = orientation;
+        }
+        orientation = 0;
+        for (int i = 0; i < mRecentOrientations.length; i++) {
+            orientation += mRecentOrientations[i];
+        }
+        orientation = orientation / mRecentOrientations.length;
 
         mCallback.update(orientation);
     }

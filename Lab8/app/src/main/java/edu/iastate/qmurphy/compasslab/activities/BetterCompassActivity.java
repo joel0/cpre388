@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import edu.iastate.qmurphy.compasslab.models.BetterCompass;
 import edu.iastate.qmurphy.compasslab.models.FlatCompass;
 
 public class BetterCompassActivity extends AppCompatActivity implements SensorUpdateCallback, View.OnClickListener {
+    private static final String TAG = "BetterCompassActivity";
+
     private BetterCompass mCompass;
     private ImageView mArrow;
 
@@ -21,7 +24,11 @@ public class BetterCompassActivity extends AppCompatActivity implements SensorUp
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all);
-        mCompass = null; // TODO Instantiate a BetterCompass object
+        try {
+            mCompass = new BetterCompass(this, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         mArrow = (ImageView) findViewById(R.id.image);
         mArrow.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.compass));
@@ -49,7 +56,8 @@ public class BetterCompassActivity extends AppCompatActivity implements SensorUp
 
     @Override
     public void update(float orientation) {
-        // TODO Rotate compass to orientation
+        Log.i(TAG, "Better orientation: " + orientation);
+        mArrow.setRotation(orientation);
     }
 
     @Override
