@@ -17,7 +17,7 @@
     <string name="timeout_title">Thread Keepalive</string>
     <string name="num_tasks_title">Number of Tasks</string>
     <string name="queue_size">Queued</string>
-    <string name="worker_count">Workers</string>
+    <string name="worker_count">Workers (active/pool/max)</string>
     <string name="complete_count">Completed tasks</string>
     <string name="default_timeunit">Seconds</string>
 </resources>
