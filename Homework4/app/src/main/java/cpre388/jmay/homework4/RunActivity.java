@@ -26,7 +26,6 @@ public class RunActivity extends AppCompatActivity {
     private TimeUnit mKeepAliveTimeUnit;
     private int mTotalTasks;
 
-    private int mCompletedTasks = 0;
     private BlockingQueue<Runnable> mRunnableQueue = new LinkedBlockingQueue<>();
     private ThreadPoolExecutor mThreadPoolExecutor;
     private Handler mHandler;
@@ -66,7 +65,6 @@ public class RunActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == TASK_COMPLETE) {
-                    mCompletedTasks++;
                     updateUI();
                 } else {
                     super.handleMessage(msg);
@@ -91,7 +89,7 @@ public class RunActivity extends AppCompatActivity {
                 mThreadPoolExecutor.getActiveCount(),
                 mThreadPoolExecutor.getPoolSize(),
                 mMaxPoolSize));
-        mCompleteCountTextView.setText(Integer.toString(mCompletedTasks));
+        mCompleteCountTextView.setText(Long.toString(mThreadPoolExecutor.getCompletedTaskCount()));
     }
 
     public void taskEnded() {

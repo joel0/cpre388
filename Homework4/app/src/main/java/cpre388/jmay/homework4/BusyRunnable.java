@@ -21,7 +21,7 @@ class BusyRunnable implements Runnable {
         mThread = Thread.currentThread();
 
         //noinspection StatementWithEmptyBody
-        for (int i = 0; i < 1000000000; i++) {
+        for (int i = 0; i < 500000000; i++) {
             // nothing
         }
         mParent.taskEnded();
