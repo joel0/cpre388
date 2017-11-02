@@ -26,8 +26,4 @@
         <item>Seconds</item>
         <item>Milliseconds</item>
     </string-array>
-    <string-array name="timeUnitsValues">
-        <item>3</item>
-        <item>2</item>
-    </string-array>
 </resources>

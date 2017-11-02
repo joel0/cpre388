@@ -6,6 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class SettingsActivity extends AppCompatActivity {
+    public static final String KEY_INITIAL_POOL_SIZE = "pref_init_pool_size";
+    public static final String KEY_MAX_POOL_SIZE = "pref_max_pool_size";
+    public static final String KEY_KEEPALIVE = "pref_keepalive";
+    public static final String KEY_KEEPALIVE_TIMEUNIT = "pref_timeunit";
+    public static final String KEY_NUM_TASKS = "pref_num_tasks";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

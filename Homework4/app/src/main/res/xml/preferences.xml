@@ -35,9 +35,9 @@
             android:title="@string/timeunit"
             android:summary="@string/timeunit_desc"
             android:dialogTitle="@string/timeunit_desc"
-            android:defaultValue="3"
+            android:defaultValue="@string/default_timeunit"
             android:entries="@array/timeUnits"
-            android:entryValues="@array/timeUnitsValues" />
+            android:entryValues="@array/timeUnits" />
     </PreferenceCategory>
 
     <PreferenceCategory

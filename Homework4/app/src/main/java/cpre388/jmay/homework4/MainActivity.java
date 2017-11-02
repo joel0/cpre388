@@ -21,4 +21,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
+
+    public void runButtonClick(View v) {
+        Intent i = new Intent(this, RunActivity.class);
+        startActivity(i);
+    }
 }
