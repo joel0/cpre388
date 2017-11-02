@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Homework4</string>
+    <string name="app_name">Busy Task - CprE388 HW4</string>
     <string name="preferences">Preferences</string>
     <string name="execute">Run</string>
     <string name="stop">Stop</string>
