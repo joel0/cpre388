@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pool_title">
+        <EditTextPreference
+            android:key="pref_num_tasks"
+            android:title="@string/num_tasks"
+            android:summary="@string/num_tasks_desc"
+            android:dialogTitle="@string/num_tasks"
+            android:defaultValue="200" />
+        <ListPreference
+            android:key="pref_init_pool_size"
+            android:title="@string/pool_size"
+            android:summary="@string/pool_size_desc"
+            android:dialogTitle="@string/pool_size"
+            android:defaultValue="5"
+            android:entries="@array/oneToTwenty"
+            android:entryValues="@array/oneToTwenty" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/timeout_title">
+        <ListPreference
+            android:key="pref_max_pool_size"
+            android:title="@string/max_pool_size"
+            android:summary="@string/max_pool_size_desc"
+            android:dialogTitle="@string/max_pool_size"
+            android:defaultValue="5"
+            android:entries="@array/oneToTwenty"
+            android:entryValues="@array/oneToTwenty" />
+        <ListPreference
+            android:key="pref_keepalive"
+            android:title="@string/keep_alive"
+            android:summary="@string/keep_alice_desc"
+            android:dialogTitle="@string/keep_alice_desc"
+            android:defaultValue="1"
+            android:entries="@array/oneToTwenty"
+            android:entryValues="@array/oneToTwenty" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/num_tasks_title">
+        <ListPreference
+            android:key="pref_timeunit"
+            android:title="@string/timeunit"
+            android:summary="@string/timeunit_desc"
+            android:dialogTitle="@string/timeunit_desc"
+            android:defaultValue="3"
+            android:entries="@array/timeUnits"
+            android:entryValues="@array/timeUnitsValues" />
+    </PreferenceCategory>
+</PreferenceScreen>

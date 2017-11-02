@@ -3,4 +3,17 @@
     <string name="preferences">Preferences</string>
     <string name="execute">Run</string>
     <string name="stop">Stop</string>
+    <string name="num_tasks">Number of tasks</string>
+    <string name="num_tasks_desc">The number of tasks that need to be completed</string>
+    <string name="pool_size">Initial pool size</string>
+    <string name="pool_size_desc">The initial number of threads to spawn regardless of demand.</string>
+    <string name="max_pool_size">Maximum pool size</string>
+    <string name="max_pool_size_desc">The maximum number of worker threads</string>
+    <string name="keep_alive">Thread keepalive</string>
+    <string name="keep_alice_desc">How long a thread should linger idle before dying</string>
+    <string name="timeunit">Keepalive time unit</string>
+    <string name="timeunit_desc">The units of the keepalive time</string>
+    <string name="pool_title">Pool Size</string>
+    <string name="timeout_title">Thread Keepalive</string>
+    <string name="num_tasks_title">Number of Tasks</string>
 </resources>
