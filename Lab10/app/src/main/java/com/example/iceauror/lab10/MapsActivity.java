@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -37,6 +40,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        double metersFromHome = SphericalUtil.computeDistanceBetween(
+                new LatLng(45.613575,-122.563568),
+                new LatLng(42.019719, -93.649773));
+        Toast.makeText(this, String.format(Locale.getDefault(),
+                "Ames, IA is %d kilometers from Vancouver, WA.", (int) (metersFromHome / 1000)),
+                Toast.LENGTH_LONG).show();
+    }
 
     /**
      * Manipulates the map once available.
