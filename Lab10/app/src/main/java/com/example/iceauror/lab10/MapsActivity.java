@@ -23,6 +23,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -47,8 +51,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double metersFromHome = SphericalUtil.computeDistanceBetween(
                 new LatLng(45.613575,-122.563568),
                 new LatLng(42.019719, -93.649773));
+        double heading = SphericalUtil.computeHeading(
+                new LatLng(42.019719, -93.649773),
+                new LatLng(45.613575,-122.563568));
+        LatLng nw = new LatLng(42.030350, -93.654296);
+        LatLng ne = new LatLng(42.030001, -93.638706);
+        LatLng sw = new LatLng(42.022844, -93.654260);
+        LatLng se = new LatLng(42.022683, -93.639175);
+        List<LatLng> iowa = new ArrayList<>();
+        iowa.add(nw);
+        iowa.add(ne);
+        iowa.add(se);
+        iowa.add(sw);
+        iowa.add(nw);
+        double area = SphericalUtil.computeArea(iowa);
         Toast.makeText(this, String.format(Locale.getDefault(),
-                "Ames, IA is %d kilometers from Vancouver, WA.", (int) (metersFromHome / 1000)),
+                "Ames, IA is %d kilometers from Vancouver, WA.\nHeading: %d\n\nISU is about %.4f square kilometers.",
+                (int) (metersFromHome / 1000),
+                (int) heading,
+                area / 1000 / 1000),
                 Toast.LENGTH_LONG).show();
     }
 
@@ -74,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CameraUpdate hometownMove = CameraUpdateFactory.newCameraPosition(pos);
         mMap.animateCamera(hometownMove);
         // TODO Change the initial states of the Map.
+        // See the layout XML
         // TODO Add the styling to the Map
         String nightJson = getMapStyle(R.raw.mapstyle_night);
         MapStyleOptions styleOptions = new MapStyleOptions(nightJson);
