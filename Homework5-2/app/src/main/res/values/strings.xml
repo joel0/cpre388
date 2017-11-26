@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Music Player Server</string>
+    <string name="app_description">This app is a server only. Please use Music Player Controller to control playback.</string>
 </resources>
