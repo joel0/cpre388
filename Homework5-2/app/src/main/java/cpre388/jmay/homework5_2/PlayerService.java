@@ -25,6 +25,8 @@ public class PlayerService extends Service {
     private static final String ACTION_PAUSE = "cpre388.jmay.homework5_2.action.PAUSE";
     private static final String ACTION_STOP = "cpre388.jmay.homework5_2.action.STOP";
 
+    private static final String BROADCAST_TRACK_INFO = "cpre388.jmay.homework5_2.broadcast.TRACK_INFO";
+
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "cpre388.jmay.homework5_2.extra.PARAM1";
 
