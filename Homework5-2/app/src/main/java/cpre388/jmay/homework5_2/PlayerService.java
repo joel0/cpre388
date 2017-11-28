@@ -127,7 +127,7 @@ public class PlayerService extends Service {
         stopIntent.setAction(ACTION_STOP);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
         Notification stopNotification = new Notification.Builder(this)
-                .setContentTitle("Song playing")
+                .setContentTitle("Song playing: " + mCurrentSong)
                 .setContentText("Click here to stop")
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
