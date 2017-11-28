@@ -1,6 +1,8 @@
 package cpre388.jmay.homework5_2;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.Context;
@@ -28,7 +30,6 @@ public class PlayerService extends Service {
 
     private static final String BROADCAST_TRACK_INFO = "cpre388.jmay.homework5_2.broadcast.TRACK_INFO";
 
-    // TODO: Rename parameters
     private static final String EXTRA_SONG_TITLE = "cpre388.jmay.homework5_2.extra.SONG_TITLE";
 
     private MediaPlayer mPlayer = null;
@@ -105,8 +106,15 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        Toast.makeText(this, "Starting service", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Starting service", Toast.LENGTH_SHORT).show();
         mPlayer = MediaPlayer.create(this, R.raw.music);
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                broadcastTrackInfo();
+                stopSelf();
+            }
+        });
     }
 
     /**
@@ -115,6 +123,17 @@ public class PlayerService extends Service {
      * parameters.
      */
     private void handleActionPlay() {
+        Intent stopIntent = new Intent(this, this.getClass());
+        stopIntent.setAction(ACTION_STOP);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
+        Notification stopNotification = new Notification.Builder(this)
+                .setContentTitle("Song playing")
+                .setContentText("Click here to stop")
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build();
+        startForeground(1, stopNotification);
+
         mPlayer.start();
         mCurrentSong = "music";
         broadcastTrackInfo();
@@ -143,8 +162,7 @@ public class PlayerService extends Service {
     }
 
     private void broadcastTrackInfo() {
-        Toast.makeText(this, "Requested track info", Toast.LENGTH_SHORT).show();
-        // TODO
+        // Toast.makeText(this, "Requested track info", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(BROADCAST_TRACK_INFO);
         intent.putExtra(EXTRA_SONG_TITLE, mCurrentSong);
         sendBroadcast(intent);
@@ -155,7 +173,7 @@ public class PlayerService extends Service {
         super.onDestroy();
 
         mPlayer.stop();
-        Toast.makeText(this, "Stopping service", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Stopping service", Toast.LENGTH_SHORT).show();
     }
 
     @Nullable

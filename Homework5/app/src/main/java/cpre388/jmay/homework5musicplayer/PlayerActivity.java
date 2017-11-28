@@ -70,7 +70,7 @@ public class PlayerActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             // TODO
             final String songTitle = intent.getStringExtra(EXTRA_SONG_TITLE);
-            Toast.makeText(mContext, "Received track info: " + songTitle, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(mContext, "Received track info: " + songTitle, Toast.LENGTH_SHORT).show();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

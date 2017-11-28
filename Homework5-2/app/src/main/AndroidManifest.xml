@@ -17,17 +17,15 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".PlayerService">
-
+        <service android:name=".PlayerService">
             <intent-filter>
                 <action android:name="cpre388.jmay.homework5_2.action.PLAY"/>
                 <action android:name="cpre388.jmay.homework5_2.action.PAUSE"/>
                 <action android:name="cpre388.jmay.homework5_2.action.STOP"/>
                 <action android:name="cpre388.jmay.homework5_2.action.REQUEST_TRACK_INFO"/>
-                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>
