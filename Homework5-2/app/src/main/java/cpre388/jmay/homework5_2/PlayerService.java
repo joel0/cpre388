@@ -137,6 +137,7 @@ public class PlayerService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
+        mPlayer.stop();
         Toast.makeText(this, "Stopping service", Toast.LENGTH_SHORT).show();
     }
 
