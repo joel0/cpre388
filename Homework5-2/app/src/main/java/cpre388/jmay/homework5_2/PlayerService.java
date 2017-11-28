@@ -24,13 +24,15 @@ public class PlayerService extends Service {
     private static final String ACTION_PLAY = "cpre388.jmay.homework5_2.action.PLAY";
     private static final String ACTION_PAUSE = "cpre388.jmay.homework5_2.action.PAUSE";
     private static final String ACTION_STOP = "cpre388.jmay.homework5_2.action.STOP";
+    private static final String ACTION_REQUEST_TRACK_INFO = "cpre388.jmay.homework5_2.action.REQUEST_TRACK_INFO";
 
     private static final String BROADCAST_TRACK_INFO = "cpre388.jmay.homework5_2.broadcast.TRACK_INFO";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "cpre388.jmay.homework5_2.extra.PARAM1";
+    private static final String EXTRA_SONG_TITLE = "cpre388.jmay.homework5_2.extra.SONG_TITLE";
 
     private MediaPlayer mPlayer = null;
+    private String mCurrentSong = "<none>";
 
     public PlayerService() {
     }
@@ -93,6 +95,8 @@ public class PlayerService extends Service {
                 handleActionPause();
             } else if (ACTION_STOP.equals(action)) {
                 handleActionStop();
+            } else if (ACTION_REQUEST_TRACK_INFO.equals(action)) {
+                broadcastTrackInfo();
             }
         }
     }
@@ -112,6 +116,8 @@ public class PlayerService extends Service {
      */
     private void handleActionPlay() {
         mPlayer.start();
+        mCurrentSong = "music";
+        broadcastTrackInfo();
     }
 
     /**
@@ -121,6 +127,7 @@ public class PlayerService extends Service {
      */
     private void handleActionPause() {
         mPlayer.pause();
+        broadcastTrackInfo();
     }
 
     /**
@@ -130,7 +137,17 @@ public class PlayerService extends Service {
      */
     private void handleActionStop() {
         mPlayer.stop();
+        mCurrentSong = "<none>";
+        broadcastTrackInfo();
         stopSelf();
+    }
+
+    private void broadcastTrackInfo() {
+        Toast.makeText(this, "Requested track info", Toast.LENGTH_SHORT).show();
+        // TODO
+        Intent intent = new Intent(BROADCAST_TRACK_INFO);
+        intent.putExtra(EXTRA_SONG_TITLE, mCurrentSong);
+        sendBroadcast(intent);
     }
 
     @Override

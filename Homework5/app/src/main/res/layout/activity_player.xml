@@ -17,8 +17,10 @@
         android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteY="31dp"
-        tools:text="Current Song"/>
+        tools:text="Current Song"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintHorizontal_bias="0.0"/>
 
     <Button
         android:id="@+id/playButton"

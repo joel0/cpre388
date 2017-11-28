@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="cpre388.jmay.homework5_2">
 
-    <permission
-        android:name="cpre388.jmay.homework5musicplayer"
-        android:protectionLevel="signature" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,13 +18,13 @@
         </activity>
 
         <service
-            android:name=".PlayerService"
-            android:exported="true">
+            android:name=".PlayerService">
 
             <intent-filter>
                 <action android:name="cpre388.jmay.homework5_2.action.PLAY"/>
                 <action android:name="cpre388.jmay.homework5_2.action.PAUSE"/>
                 <action android:name="cpre388.jmay.homework5_2.action.STOP"/>
+                <action android:name="cpre388.jmay.homework5_2.action.REQUEST_TRACK_INFO"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
