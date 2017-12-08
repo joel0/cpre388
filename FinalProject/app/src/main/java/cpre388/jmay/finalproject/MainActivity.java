@@ -3,16 +3,14 @@ package cpre388.jmay.finalproject;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import org.jboss.com.sun.net.httpserver.*;
 import org.jboss.com.sun.net.httpserver.Headers;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,10 +18,11 @@ import java.util.Map;
 import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String FORWARD_SERVER = "http://10.30.129.208";
+    static final String FORWARD_SERVER = "http://hue.jmay.us";
     private static final String TAG = "MainActivity";
 
     private OkHttpClient client = new OkHttpClient();
+    private HueBridge mBridge = new HueBridge();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
 
         Thread t = new Thread(new Network());
         t.start();
+    }
+
+    public void onHandle(View v) {
+        mBridge.setOn(2, true);
+    }
+
+    public void offHandle(View v) {
+        mBridge.setOn(2, false);
     }
 
     private class Network implements Runnable {
