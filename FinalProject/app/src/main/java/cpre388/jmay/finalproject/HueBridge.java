@@ -50,6 +50,52 @@ public class HueBridge {
         }).start();
     }
 
+    // Range: 0 <-> 254
+    public void setBrightness(int light, int brightness) {
+        if (brightness < 0) { brightness = 0; }
+        if (brightness > 254) { brightness = 254; }
+        String jsonBody = String.format(Locale.getDefault(), "{\"bri\": %d}", brightness);
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, jsonBody);
+        final Request request = new Request.Builder()
+                .url(String.format(Locale.getDefault(), "%s/api/%s/lights/%d/state",
+                        HUE_URL, HUE_USERNAME, light))
+                .put(body)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    // Rage: 500 <-> 153
+    public void setTemperature(int light, int temperature) {
+        if (temperature < 153) { temperature = 153; }
+        if (temperature > 500) { temperature = 500; }
+        String jsonBody = String.format(Locale.getDefault(), "{\"ct\": %d}", temperature);
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, jsonBody);
+        final Request request = new Request.Builder()
+                .url(String.format(Locale.getDefault(), "%s/api/%s/lights/%d/state",
+                        HUE_URL, HUE_USERNAME, light))
+                .put(body)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public void getState(int light, ILightStateCallback callback) {
         new Thread(new doGetState(light, callback))
                 .start();

@@ -1,5 +1,10 @@
 package cpre388.jmay.finalproject;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,19 +24,29 @@ import java.util.Map;
 
 import okhttp3.*;
 
-public class MainActivity extends AppCompatActivity implements HueBridge.ILightStateCallback {
-    static final String FORWARD_SERVER = "http://hue.jmay.us";
+public class MainActivity extends AppCompatActivity implements HueBridge.ILightStateCallback, SensorEventListener {
+    static final String FORWARD_SERVER = "https://hue.jmay.us";
     private static final String TAG = "MainActivity";
+    private final float PROXIMITY_MAX = 5.0f;
+    private final float BRIGHTNESS_MAX = 255.0f;
 
     private OkHttpClient client = new OkHttpClient();
     private HueBridge mBridge = new HueBridge();
     private Handler mHandler;
     private TextView mStatusTextView;
 
+    private SensorManager mSensorManager;
+    private Sensor mLight;
+    private Sensor mProximity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         mStatusTextView = (TextView) findViewById(R.id.statusTextView);
         mHandler = new Handler(getMainLooper());
@@ -39,6 +54,19 @@ public class MainActivity extends AppCompatActivity implements HueBridge.ILightS
         Thread t = new Thread(new Network());
         t.start();
         fetchLightStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
     public void onHandle(View v) {
@@ -67,6 +95,28 @@ public class MainActivity extends AppCompatActivity implements HueBridge.ILightS
                         lightState.brightness, lightState.temperature));
             }
         });
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float v;
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_LIGHT:
+                Log.v(TAG, "Light sensor: " + event.values[0]);
+                v = Math.min(event.values[0], BRIGHTNESS_MAX);
+                mBridge.setBrightness(2, (int) (v / BRIGHTNESS_MAX * 254));
+                break;
+            case Sensor.TYPE_PROXIMITY:
+                Log.v(TAG, "Proximity sensor: " + event.values[0]);
+                v = Math.min(event.values[0], PROXIMITY_MAX);
+                mBridge.setTemperature(2, (int) (v / PROXIMITY_MAX * 347.0f + 153.0f));
+                break;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Do nothing
     }
 
     private class Network implements Runnable {
