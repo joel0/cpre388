@@ -1,6 +1,13 @@
 package cpre388.jmay.finalproject;
 
+import android.util.JsonReader;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 import okhttp3.FormBody;
@@ -8,6 +15,8 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by jmay on 2017-12-08.
@@ -16,6 +25,7 @@ import okhttp3.RequestBody;
 public class HueBridge {
     private static final String HUE_USERNAME = "vDgK5rxfSRxEgYv07PbAXDLbcrdikbixluFP-nGT";
     private static final String HUE_URL = MainActivity.FORWARD_SERVER;
+    private static final String TAG = "HueBridge";
     private static final MediaType JSON_MEDIA_TYPE
             = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
@@ -38,5 +48,81 @@ public class HueBridge {
                 }
             }
         }).start();
+    }
+
+    public void getState(int light, ILightStateCallback callback) {
+        new Thread(new doGetState(light, callback))
+                .start();
+    }
+
+    private class doGetState implements Runnable {
+        private ILightStateCallback mCallback;
+        private int mLight;
+
+        doGetState(int light, ILightStateCallback callback) {
+            mCallback = callback;
+            mLight = light;
+        }
+
+        @Override
+        public void run() {
+            Response response;
+            ResponseBody bodyObj;
+            JSONObject statusJson;
+            LightState out;
+
+            Request request = new Request.Builder()
+                    .url(String.format(Locale.getDefault(), "%s/api/%s/lights/%d",
+                            HUE_URL, HUE_USERNAME, mLight))
+                    .build();
+            try {
+                response = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            if (response.code() != 200) {
+                Log.e(TAG, "Not 200 status on status request");
+                return;
+            }
+            bodyObj = response.body();
+            if (bodyObj == null) {
+                Log.e(TAG, "No response body to status request");
+                return;
+            }
+            try {
+                statusJson = new JSONObject(bodyObj.string()).getJSONObject("state");
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            try {
+                out = new LightState(
+                        statusJson.getBoolean("on"),
+                        statusJson.getInt("bri"),
+                        statusJson.getInt("ct")
+                );
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+            mCallback.receiveLightState(mLight, out);
+        }
+    }
+
+    interface ILightStateCallback {
+        void receiveLightState(int light, LightState lightState);
+    }
+
+    class LightState {
+        boolean on;
+        int brightness;
+        int temperature;
+
+        LightState(boolean on, int brightness, int temperature) {
+            this.on = on;
+            this.brightness = brightness;
+            this.temperature = temperature;
+        }
     }
 }

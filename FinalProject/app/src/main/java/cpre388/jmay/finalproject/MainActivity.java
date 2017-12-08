@@ -1,9 +1,11 @@
 package cpre388.jmay.finalproject;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import org.jboss.com.sun.net.httpserver.*;
 import org.jboss.com.sun.net.httpserver.Headers;
@@ -17,28 +19,54 @@ import java.util.Map;
 
 import okhttp3.*;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HueBridge.ILightStateCallback {
     static final String FORWARD_SERVER = "http://hue.jmay.us";
     private static final String TAG = "MainActivity";
 
     private OkHttpClient client = new OkHttpClient();
     private HueBridge mBridge = new HueBridge();
+    private Handler mHandler;
+    private TextView mStatusTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mStatusTextView = (TextView) findViewById(R.id.statusTextView);
+        mHandler = new Handler(getMainLooper());
+
         Thread t = new Thread(new Network());
         t.start();
+        fetchLightStatus();
     }
 
     public void onHandle(View v) {
         mBridge.setOn(2, true);
+        fetchLightStatus();
     }
 
     public void offHandle(View v) {
         mBridge.setOn(2, false);
+        fetchLightStatus();
+    }
+
+    private void fetchLightStatus() {
+        mBridge.getState(2, this);
+    }
+
+    @Override
+    public void receiveLightState(int light, final HueBridge.LightState lightState) {
+        Log.v(TAG, "Got status of light " + light);
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mStatusTextView.setText(String.format(Locale.getDefault(),
+                        "on %s\nbrightness %d\ncolor %d",
+                        Boolean.toString(lightState.on),
+                        lightState.brightness, lightState.temperature));
+            }
+        });
     }
 
     private class Network implements Runnable {
