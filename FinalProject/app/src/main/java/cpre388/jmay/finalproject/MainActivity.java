@@ -67,39 +67,71 @@ public class MainActivity extends AppCompatActivity {
                         .url(FORWARD_SERVER + getPathAndQuery(exchange.getRequestURI()));
                 copyHeaders(exchange.getRequestHeaders(), requestBuilder);
 
+                // Copy request body
+                RequestBody requestBodyObj = null;
+                if (exchange.getRequestHeaders().containsKey("Content-Length") &&
+                        exchange.getRequestHeaders().containsKey("Content-Type")) {
+                    MediaType contentType = MediaType.parse(
+                            exchange.getRequestHeaders().getFirst("Content-Type"));
+                    int contentLen = Integer.parseInt(
+                            exchange.getRequestHeaders().getFirst("Content-Length"));
+                    byte[] requestBody = new byte[contentLen];
+
+                    if (exchange.getRequestBody().read(requestBody, 0, contentLen) != contentLen) {
+                        Log.w(TAG, "Did not read enough content in POST data");
+                    }
+                    requestBodyObj = RequestBody.create(contentType, requestBody);
+                }
+
+                // Set the verb and send the request body, if needed.
                 switch (exchange.getRequestMethod()) {
-                    case "POST":
-                        MediaType contentType = MediaType.parse(
-                                exchange.getRequestHeaders().getFirst("Content-Type"));
-                        int contentLen = Integer.parseInt(
-                                exchange.getRequestHeaders().getFirst("Content-Length"));
-                        byte[] requestBody = new byte[contentLen];
-
-                        if (exchange.getRequestBody().read(requestBody, 0, contentLen) != contentLen) {
-                            Log.w(TAG, "Did not read enough content in POST data");
-                        }
-                        RequestBody requestBodyObj = RequestBody.create(contentType, requestBody);
-                        requestBuilder = requestBuilder.post(requestBodyObj);
-                    case "GET":
-                        response = client.newCall(requestBuilder.build()).execute();
-                        Log.v(TAG, "Relayed status: " + response.code());
-                        status = response.code();
-                        logHeaders(response.headers());
-                        copyHeaders(response.headers(), exchange.getResponseHeaders());
-                        ResponseBody body = response.body();
-                        if (body != null) {
-                            byte[] tempBody = body.bytes();
-                            Log.v(TAG, "Relay response size: " + tempBody.length);
-                            responseBytes = tempBody;
+                    case "DELETE":
+                        if (requestBodyObj == null) {
+                            requestBuilder.delete();
                         } else {
-                            Log.v(TAG, "Relay response is empty");
+                            requestBuilder.delete(requestBodyObj);
                         }
-
+                        break;
+                    case "PUT":
+                        if (requestBodyObj == null) {
+                            Log.e(TAG, "Request body was empty on a PUT.");
+                            return;
+                        }
+                        requestBuilder.put(requestBodyObj);
+                        break;
+                    case "POST":
+                        if (requestBodyObj == null) {
+                            Log.e(TAG, "Request body was empty on a POST.");
+                            return;
+                        }
+                        requestBuilder.post(requestBodyObj);
+                        break;
+                    case "GET":
                         break;
                     default:
                         responseBytes = "Invalid verb".getBytes();
+                        exchange.sendResponseHeaders(status, responseBytes.length);
+                        exchange.getResponseBody().write(responseBytes);
+                        exchange.close();
+                        return;
                 }
 
+                // Execute request to Bridge.
+                response = client.newCall(requestBuilder.build()).execute();
+                Log.v(TAG, "Relayed status: " + response.code());
+                status = response.code();
+                logHeaders(response.headers());
+                copyHeaders(response.headers(), exchange.getResponseHeaders());
+                ResponseBody body = response.body();
+                if (body != null) {
+                    byte[] tempBody = body.bytes();
+                    Log.v(TAG, "Relay response size: " + tempBody.length);
+                    responseBytes = tempBody;
+                } else {
+                    Log.v(TAG, "Relay response is empty");
+                }
+
+                // Send data to phone.
                 exchange.sendResponseHeaders(status, responseBytes.length);
                 exchange.getResponseBody().write(responseBytes);
                 exchange.close();
