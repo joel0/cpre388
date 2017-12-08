@@ -26,5 +26,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'junit:junit:4.12'
+    compile group: 'org.jboss.com.sun.httpserver', name: 'httpserver', version: '1.0.8.Final'
     testCompile 'junit:junit:4.12'
 }
