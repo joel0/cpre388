@@ -2,9 +2,11 @@ package cpre388.jmay.finalproject;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.jboss.com.sun.net.httpserver.Headers;
 import org.jboss.com.sun.net.httpserver.HttpExchange;
@@ -17,9 +19,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -27,9 +27,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class RelayService extends Service {
+public class RelayService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "RelayService";
     private Thread mRelay = null;
+    private SharedPreferences mSharedPreferences;
 
     public RelayService() {
     }
@@ -41,6 +42,8 @@ public class RelayService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         if (mRelay == null) {
             Log.v(TAG, "Creating thread");
             mRelay = new Thread(new Network());
@@ -50,6 +53,20 @@ public class RelayService extends Service {
             mRelay.start();
         }
         return START_STICKY;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ("start_with_os".equals(key)) {
+            boolean startWithOs = mSharedPreferences.getBoolean(key, false);
+            Toast.makeText(this, "Start with OS updated: " + startWithOs, Toast.LENGTH_SHORT).show();
+            if (!startWithOs) {
+                Toast.makeText(this, "Killing relay service", Toast.LENGTH_SHORT).show();
+                mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+                mRelay.interrupt();
+                stopSelf();
+            }
+        }
     }
 
     private class Network implements Runnable {

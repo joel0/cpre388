@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="start_with_os"
+        android:summary="@string/pref_description_start_with_os"
+        android:title="@string/pref_title_start_with_os"/>
+
+</PreferenceScreen>

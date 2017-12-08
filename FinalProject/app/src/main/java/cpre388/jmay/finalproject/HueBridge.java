@@ -35,7 +35,7 @@ public class HueBridge {
     private ThreadPoolExecutor mThreadPoolExecutor;
 
     public HueBridge() {
-        mThreadPoolExecutor = new ThreadPoolExecutor(1, 1, 100, TimeUnit.SECONDS,
+        mThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 100, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>());
     }
 

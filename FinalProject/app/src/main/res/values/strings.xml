@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Final Project</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_start_with_os">Start with OS</string>
+    <string name="pref_description_start_with_os">Start when the system boots and when it
+        enters/exists airplane mode.
+    </string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

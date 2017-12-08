@@ -1,29 +1,30 @@
 package cpre388.jmay.finalproject;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import org.jboss.com.sun.net.httpserver.*;
-import org.jboss.com.sun.net.httpserver.Headers;
-
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.*;
 
@@ -37,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements HueBridge.ILightS
     private HueBridge mBridge = new HueBridge();
     private Handler mHandler;
     private TextView mStatusTextView;
+    private DrawerLayout mDrawerLayout;
+    private ListView mNavList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private SharedPreferences mSharedPreferences;
 
     private SensorManager mSensorManager;
     private Sensor mLight;
@@ -51,10 +56,51 @@ public class MainActivity extends AppCompatActivity implements HueBridge.ILightS
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
+        mNavList = (ListView) findViewById(R.id.navList);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mStatusTextView = (TextView) findViewById(R.id.statusTextView);
         mHandler = new Handler(getMainLooper());
 
+        mNavList.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[] {"Settings"}));
+        mNavList.setOnItemClickListener(new DrawerClickHandler());
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         fetchLightStatus();
+    }
+
+    private void updatePreferences() {
+        boolean startWithOs = mSharedPreferences.getBoolean("start_with_os", false);
+        if (startWithOs) {
+            Toast.makeText(this, "Starting relay service", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, RelayService.class);
+            startService(intent);
+        }
+    }
+
+    public void iptablesHandle(View view) throws IOException, InterruptedException {
+        Process su = Runtime.getRuntime().exec("su");
+        DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
+
+        outputStream.writeBytes("iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080\n");
+        outputStream.flush();
+        outputStream.writeBytes("iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports 8080\n");
+        outputStream.flush();
+        /*Runtime.getRuntime().exec(new String[] {
+                "su -c \"iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080\"",
+                "su -c \"iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports 8080\""
+        });*/
+    }
+
+    private class DrawerClickHandler implements ListView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position == 0) {
+                // Settings
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
@@ -62,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements HueBridge.ILightS
         super.onResume();
         mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        updatePreferences();
     }
 
     @Override
