@@ -9,6 +9,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -28,7 +31,13 @@ public class HueBridge {
     private static final String TAG = "HueBridge";
     private static final MediaType JSON_MEDIA_TYPE
             = MediaType.parse("application/json; charset=utf-8");
-    private OkHttpClient client = new OkHttpClient();
+    public static final OkHttpClient client = new OkHttpClient();
+    private ThreadPoolExecutor mThreadPoolExecutor;
+
+    public HueBridge() {
+        mThreadPoolExecutor = new ThreadPoolExecutor(1, 1, 100, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>());
+    }
 
     public void setOn(int light, boolean on) {
         String jsonBody = String.format(Locale.getDefault(), "{\"on\": %s}", Boolean.toString(on));
@@ -38,7 +47,7 @@ public class HueBridge {
                         HUE_URL, HUE_USERNAME, light))
                 .put(body)
                 .build();
-        new Thread(new Runnable() {
+        mThreadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -47,11 +56,12 @@ public class HueBridge {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     // Range: 0 <-> 254
     public void setBrightness(int light, int brightness) {
+        Log.v(TAG, "Setting brightness: " + brightness);
         if (brightness < 0) { brightness = 0; }
         if (brightness > 254) { brightness = 254; }
         String jsonBody = String.format(Locale.getDefault(), "{\"bri\": %d}", brightness);
@@ -61,7 +71,7 @@ public class HueBridge {
                         HUE_URL, HUE_USERNAME, light))
                 .put(body)
                 .build();
-        new Thread(new Runnable() {
+        mThreadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -70,7 +80,7 @@ public class HueBridge {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     // Rage: 500 <-> 153
@@ -84,7 +94,7 @@ public class HueBridge {
                         HUE_URL, HUE_USERNAME, light))
                 .put(body)
                 .build();
-        new Thread(new Runnable() {
+        mThreadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -93,12 +103,11 @@ public class HueBridge {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     public void getState(int light, ILightStateCallback callback) {
-        new Thread(new doGetState(light, callback))
-                .start();
+        mThreadPoolExecutor.execute(new doGetState(light, callback));
     }
 
     private class doGetState implements Runnable {
