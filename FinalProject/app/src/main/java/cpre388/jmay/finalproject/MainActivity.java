@@ -53,45 +53,59 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            Request.Builder requestBuilder;
-            byte[] responseBytes = "no response".getBytes();
-            int status = 200;
+            try {
+                Request.Builder requestBuilder;
+                byte[] responseBytes = "no response".getBytes();
+                int status = 200;
+                Response response = null;
 
-            Log.v(TAG, "Path: " + getPathAndQuery(exchange.getRequestURI()));
-            Log.v(TAG, "Verb: " + exchange.getRequestMethod());
-            logHeaders(exchange.getRequestHeaders());
+                Log.v(TAG, "Path: " + getPathAndQuery(exchange.getRequestURI()));
+                Log.v(TAG, "Verb: " + exchange.getRequestMethod());
+                logHeaders(exchange.getRequestHeaders());
 
-            requestBuilder = new Request.Builder()
-                    .url(FORWARD_SERVER + getPathAndQuery(exchange.getRequestURI()));
-            copyHeaders(exchange.getRequestHeaders(), requestBuilder);
+                requestBuilder = new Request.Builder()
+                        .url(FORWARD_SERVER + getPathAndQuery(exchange.getRequestURI()));
+                copyHeaders(exchange.getRequestHeaders(), requestBuilder);
 
-            switch (exchange.getRequestMethod()) {
-                case "GET":
-                    Response response = client.newCall(requestBuilder.build()).execute();
-                    Log.v(TAG, "Relayed status: " + response.code());
-                    status = response.code();
-                    logHeaders(response.headers());
-                    copyHeaders(response.headers(), exchange.getResponseHeaders());
-                    ResponseBody body = response.body();
-                    if (body != null) {
-                        byte[] tempBody = body.bytes();
-                        Log.v(TAG, "Relay response size: " + tempBody.length);
-                        responseBytes = tempBody;
-                    } else {
-                        Log.v(TAG, "Relay response is empty");
-                    }
+                switch (exchange.getRequestMethod()) {
+                    case "POST":
+                        MediaType contentType = MediaType.parse(
+                                exchange.getRequestHeaders().getFirst("Content-Type"));
+                        int contentLen = Integer.parseInt(
+                                exchange.getRequestHeaders().getFirst("Content-Length"));
+                        byte[] requestBody = new byte[contentLen];
 
-                    break;
-                case "POST":
-                    responseBytes = "POST requested".getBytes();
-                    break;
-                default:
-                    responseBytes = "Invalid verb".getBytes();
+                        if (exchange.getRequestBody().read(requestBody, 0, contentLen) != contentLen) {
+                            Log.w(TAG, "Did not read enough content in POST data");
+                        }
+                        RequestBody requestBodyObj = RequestBody.create(contentType, requestBody);
+                        requestBuilder = requestBuilder.post(requestBodyObj);
+                    case "GET":
+                        response = client.newCall(requestBuilder.build()).execute();
+                        Log.v(TAG, "Relayed status: " + response.code());
+                        status = response.code();
+                        logHeaders(response.headers());
+                        copyHeaders(response.headers(), exchange.getResponseHeaders());
+                        ResponseBody body = response.body();
+                        if (body != null) {
+                            byte[] tempBody = body.bytes();
+                            Log.v(TAG, "Relay response size: " + tempBody.length);
+                            responseBytes = tempBody;
+                        } else {
+                            Log.v(TAG, "Relay response is empty");
+                        }
+
+                        break;
+                    default:
+                        responseBytes = "Invalid verb".getBytes();
+                }
+
+                exchange.sendResponseHeaders(status, responseBytes.length);
+                exchange.getResponseBody().write(responseBytes);
+                exchange.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-
-            exchange.sendResponseHeaders(status, responseBytes.length);
-            exchange.getResponseBody().write(responseBytes);
-            exchange.close();
         }
     }
 
@@ -130,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case "host":
-                //case "accept-encoding":
             }
         }
     }
